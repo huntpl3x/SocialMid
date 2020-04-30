@@ -68,13 +68,14 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         //don't have an account TextView click
-        mNoAccountTv.setOnClickListener(new View.OnClickListener() {
+        // TODO
+        /*mNoAccountTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
                 finish();
             }
-        });
+        });*/
 
         //login button click
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
