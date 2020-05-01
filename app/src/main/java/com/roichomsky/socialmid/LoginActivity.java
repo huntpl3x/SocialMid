@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,13 +29,14 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
 
-    TextView mNoAccountTv, mForgotPassTv;
-    EditText mEmailEt, mPasswordEt;
-    Button mLoginBtn;
-    private FirebaseAuth mAuth;
+    Dialog registerDialog;
+    TextView mNoAccountTv, mForgotPassTv, mHaveAccountTv;
+    EditText mEmailEt, mPasswordEt, mPasswordEt2, mEmailEt2;
+    Button mLoginBtn, mRegisterBtN2;
+    private FirebaseAuth mAuth, mAuth2;
 
-    //progressBar to display while logging user
-    ProgressDialog progressDialog;
+    //progressBar to display while logging user and registering one
+    ProgressDialog progressDialog, progressDialog2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,15 +69,13 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        //don't have an account TextView click
-        // TODO
-        /*mNoAccountTv.setOnClickListener(new View.OnClickListener() {
+        //don't have an account TextView click open register dialog
+        mNoAccountTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
-                finish();
+                createRegisterDialog();
             }
-        });*/
+        });
 
         //login button click
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
@@ -203,5 +203,82 @@ public class LoginActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp(){
         onBackPressed(); // go previous activity
         return super.onSupportNavigateUp();
+    }
+
+    public void createRegisterDialog()
+    {
+        // Creates dialog and sets the layout and flags
+        registerDialog = new Dialog(this);
+        registerDialog.setCancelable(true);
+        registerDialog.setContentView(R.layout.activity_register);
+
+        // Init
+        mEmailEt2 = registerDialog.findViewById(R.id.emailEt);
+        mPasswordEt2 = registerDialog.findViewById(R.id.passwordEt);
+        mRegisterBtN2 = registerDialog.findViewById(R.id.registerBtn);
+        mHaveAccountTv = registerDialog.findViewById(R.id.haveAccountTv);
+        mHaveAccountTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                registerDialog.dismiss();
+            }
+        });
+
+        // Handle register button click
+        mRegisterBtN2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //input email, password
+                String email = mEmailEt2.getText().toString().trim();
+                String password = mPasswordEt2.getText().toString().trim();
+                //validate
+                if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+                    //set error and focus to email editText
+                    mEmailEt2.setError("Invalid Email");
+                    mEmailEt2.setFocusable(true);
+                }
+                else if(password.length()<6){
+                    //set error and focus to password editText
+                    mPasswordEt2.setError("Password length at least 6 characters");
+                    mPasswordEt2.setFocusable(true);
+                }
+                else{
+                    registerUser(email, password); // Registers the user
+                }
+            }
+        });
+
+        registerDialog.show();
+    }
+
+    private void registerUser(String email, String password) {
+        //email and password pattern is valid, show progressDialog and start registering user
+        progressDialog2.show();
+
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, dissmiss dialog and start regiser activity.
+                            progressDialog2.dismiss();
+                            FirebaseUser user = mAuth2.getCurrentUser();
+                            Toast.makeText(LoginActivity.this, "Registered...\n"+user.getEmail(), Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(LoginActivity.this, ProfileActivity.class));
+                            finish();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            progressDialog2.dismiss();
+                            Toast.makeText(LoginActivity.this, "Registration failed.", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                progressDialog2.dismiss();
+                Toast.makeText(LoginActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

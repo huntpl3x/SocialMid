@@ -3,11 +3,13 @@ package com.roichomsky.socialmid;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -78,6 +80,13 @@ public class ProfileActivity extends AppCompatActivity {
         if (id==R.id.action_logout){
             firebaseAuth.signOut();
             checkUserStatus();
+        }
+        // assignment
+        if (id==R.id.action_hello){
+            Toast.makeText(ProfileActivity.this, "Hello world!", Toast.LENGTH_SHORT).show();
+        }
+        if (id==R.id.action_moveToListActivity){
+            startActivity(new Intent(ProfileActivity.this, ListActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
