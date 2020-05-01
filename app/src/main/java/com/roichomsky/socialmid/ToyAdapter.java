@@ -37,7 +37,6 @@ public class ToyAdapter extends ArrayAdapter<Toy> {
         ivProduct.setImageBitmap(temp.getBitmap());
         tvPrice.setText(String.valueOf(temp.getPrice()));
         tvName.setText(temp.getName());
-        tvPrice.setText(temp.getPrice());
 
         return view;
     }
