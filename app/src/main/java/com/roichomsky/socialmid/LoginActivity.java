@@ -11,7 +11,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -26,12 +25,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
 
     Dialog registerDialog;
     TextView mNoAccountTv, mForgotPassTv, mHaveAccountTv;
-    EditText mEmailEt, mPasswordEt, mPasswordEt2, mEmailEt2;
+    EditText mEmailEt, mPasswordEt, mNameEt, mPasswordEt2, mEmailEt2;
     Button mLoginBtn, mRegisterBtN2;
     private FirebaseAuth mAuth, mAuth2;
 
@@ -178,8 +181,27 @@ public class LoginActivity extends AppCompatActivity {
                             progressDialog.dismiss();
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
-                            //user is logged in, so start ProfileActivity
-                            startActivity(new Intent(LoginActivity.this, ProfileActivity.class));
+
+                            //if user is signing in first time then get and show user info
+                            if (task.getResult().getAdditionalUserInfo().isNewUser()){
+                                // Get user email and uid from auth
+                                String email = user.getEmail();
+                                String uid = user.getUid();
+                                // When user is registered store user info in firebase realtime database too
+                                // using HashMap
+                                HashMap<Object , String> hashMap = new HashMap<>();
+                                hashMap.put("email", email);
+                                hashMap.put("uid", uid);
+                                hashMap.put("name", "");
+                                // firebase database instance
+                                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                // Path to store user data named "Users"
+                                DatabaseReference reference = database.getReference("Users");
+                                // Put data withing hashmap in database
+                                reference.child(uid).setValue(hashMap);
+                            }
+                            //user is logged in, so start DashboardActivity
+                            startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
                             finish();
                         } else {
                             //dismisses the progressBar
@@ -210,11 +232,12 @@ public class LoginActivity extends AppCompatActivity {
         // Creates dialog and sets the layout and flags
         registerDialog = new Dialog(this);
         registerDialog.setCancelable(true);
-        registerDialog.setContentView(R.layout.activity_register);
+        registerDialog.setContentView(R.layout.register_dialog);
 
         // Init
         mEmailEt2 = registerDialog.findViewById(R.id.emailEt);
         mPasswordEt2 = registerDialog.findViewById(R.id.passwordEt);
+        mNameEt = registerDialog.findViewById(R.id.nameEt);
         mRegisterBtN2 = registerDialog.findViewById(R.id.registerBtn);
         mHaveAccountTv = registerDialog.findViewById(R.id.haveAccountTv);
         mHaveAccountTv.setOnClickListener(new View.OnClickListener() {
@@ -231,6 +254,7 @@ public class LoginActivity extends AppCompatActivity {
                 //input email, password
                 String email = mEmailEt2.getText().toString().trim();
                 String password = mPasswordEt2.getText().toString().trim();
+                String name = mNameEt.getText().toString().trim();
                 //validate
                 if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
                     //set error and focus to email editText
@@ -241,6 +265,11 @@ public class LoginActivity extends AppCompatActivity {
                     //set error and focus to password editText
                     mPasswordEt2.setError("Password length at least 6 characters");
                     mPasswordEt2.setFocusable(true);
+                }
+                else if(name.length()<2){
+                    //set error and focus to password editText
+                    mNameEt.setError("Invalid nickname");
+                    mNameEt.setFocusable(true);
                 }
                 else{
                     registerUser(email, password); // Registers the user
@@ -260,11 +289,30 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, dissmiss dialog and start regiser activity.
+                            // Sign in success, dismiss dialog and start regiser activity.
                             progressDialog2.dismiss();
+
                             FirebaseUser user = mAuth2.getCurrentUser();
+                            // Get user email and uid from auth
+                            String email = user.getEmail();
+                            String uid = user.getUid();
+                            String name = mNameEt.getText().toString().trim();
+                            // When user is registered stroe user info in firebase realtime database too
+                            // using HashMap
+                            HashMap<Object , String> hashMap = new HashMap<>();
+                            hashMap.put("email", email);
+                            hashMap.put("uid", uid);
+                            hashMap.put("name", name);
+                            hashMap.put("image", "");
+                            // firebase database instance
+                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                            // Path to store user data named "Users"
+                            DatabaseReference reference = database.getReference("Users");
+                            // Put data withing hashmap in database
+                            reference.child(uid).setValue(hashMap);
+
                             Toast.makeText(LoginActivity.this, "Registered...\n"+user.getEmail(), Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(LoginActivity.this, ProfileActivity.class));
+                            startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
                             finish();
                         } else {
                             // If sign in fails, display a message to the user.

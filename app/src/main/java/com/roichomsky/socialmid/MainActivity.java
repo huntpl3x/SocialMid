@@ -1,7 +1,6 @@
 package com.roichomsky.socialmid;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
@@ -21,11 +20,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
     //views
-    EditText mEmailEt, mPasswordEt;
+    EditText mEmailEt, mPasswordEt, mNameEt;
     TextView mHaveAccountTv;
     ProgressDialog progressDialog;
     FirebaseAuth mAuth;
@@ -66,13 +69,15 @@ public class MainActivity extends AppCompatActivity {
     {
         registerDialog = new Dialog(this);
         registerDialog.setCancelable(true);
-        registerDialog.setContentView(R.layout.activity_register);
+        registerDialog.setContentView(R.layout.register_dialog);
 
         // Init
         mEmailEt = registerDialog.findViewById(R.id.emailEt);
         mPasswordEt = registerDialog.findViewById(R.id.passwordEt);
         mRegisterBtN2 = registerDialog.findViewById(R.id.registerBtn);
         mHaveAccountTv = registerDialog.findViewById(R.id.haveAccountTv);
+        mNameEt = registerDialog.findViewById(R.id.nameEt);
+
         mHaveAccountTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
                 //input email, password
                 String email = mEmailEt.getText().toString().trim();
                 String password = mPasswordEt.getText().toString().trim();
+                String name = mNameEt.getText().toString().trim();
                 //validate
                 if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
                     //set error and focus to email editText
@@ -97,6 +103,11 @@ public class MainActivity extends AppCompatActivity {
                     //set error and focus to password editText
                     mPasswordEt.setError("Password length at least 6 characters");
                     mPasswordEt.setFocusable(true);
+                }
+                else if(name.length()<2){
+                    //set error and focus to password editText
+                    mNameEt.setError("Invalid nickname");
+                    mNameEt.setFocusable(true);
                 }
                 else{
                     registerUser(email, password); // Registers the user
@@ -116,11 +127,29 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, dissmiss dialog and start regiser activity.
+                            // Sign in success, dissmises dialog and start regiser activity.
                             progressDialog.dismiss();
+
                             FirebaseUser user = mAuth.getCurrentUser();
+                            // Get user email and uid from auth
+                            String email = user.getEmail();
+                            String uid = user.getUid();
+                            String name = mNameEt.getText().toString().trim();
+                            // When user is registered store user info in firebase realtime database too
+                            // using HashMap
+                            HashMap<Object , String> hashMap = new HashMap<>();
+                            hashMap.put("email", email);
+                            hashMap.put("uid", uid);
+                            hashMap.put("name", name);
+                            // firebase database instance
+                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                            // Path to store user data named "Users"
+                            DatabaseReference reference = database.getReference("Users");
+                            // Put data withing hashmap in database
+                            reference.child(uid).setValue(hashMap);
+
                             Toast.makeText(MainActivity.this, "Registered...\n"+user.getEmail(), Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+                            startActivity(new Intent(MainActivity.this, DashboardActivity.class));
                             finish();
                         } else {
                             // If sign in fails, display a message to the user.
