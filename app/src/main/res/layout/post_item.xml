@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -8,7 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:paddingStart="5dp"
+        android:paddingStart="15dp"
         android:orientation="horizontal">
 
         <com.blogspot.atifsoftwares.circularimageview.CircularImageView
@@ -25,8 +26,10 @@
             android:layout_marginTop="16dp"
             android:paddingStart="3dp"
             android:paddingEnd="3dp"
+            android:textColor="@color/colorBlack"
             android:text="USERNAME"
-            android:textSize="12sp" />
+            android:textStyle="bold"
+        android:textSize="12sp" />
 
     </LinearLayout>
 
@@ -35,7 +38,7 @@
         android:layout_height="1080px"
         android:id="@+id/postIv"
         android:scaleType="fitXY"
-        android:src="@drawable/ic_default_img" />
+        android:src="@color/colorDarkGrey" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,10 +48,84 @@
         <ImageView
             android:layout_width="35dp"
             android:layout_height="35dp"
+            android:layout_marginStart="15dp"
             android:id="@+id/likeIv"
+            android:layout_marginTop="7dp"
             android:src="@drawable/ic_like" />
 
+        <ImageView
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="15dp"
+            android:id="@+id/commentIv"
+            android:layout_marginTop="7dp"
+            android:src="@drawable/ic_comments" />
+
+        <ImageView
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="15dp"
+            android:id="@+id/shareIv"
+            android:layout_marginTop="7dp"
+            android:src="@drawable/ic_share" />
+
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:layout_marginStart="15dp"
+        android:id="@+id/likesTv"
+        android:textColor="@color/colorBlack"
+        android:textStyle="bold"
+        android:text="000 LIKES"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:orientation="horizontal">
+
+        <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/usernameTv"
+            android:layout_marginStart="15dp"
+        android:textColor="@color/colorBlack"
+        android:text="USERNAME"
+        android:textStyle="bold"
+        android:textSize="12sp"
+            tools:ignore="DuplicateIds" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/descriptionTv"
+            android:layout_marginStart="5dp"
+            android:textColor="@color/colorBlack"
+            android:textSize="12sp"
+            android:text="THIS IS A DESCRIPTION TEXT VIEW"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:layout_marginStart="15dp"
+        android:id="@+id/commentsTv"
+        android:textColor="#808080"
+        android:text="View all 000 comments"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:layout_marginStart="15dp"
+        android:id="@+id/dateTv"
+        android:textColor="#808080"
+        android:textSize="10sp"
+        android:text="17/08/2020 15:23"/>
 
 
 </LinearLayout>

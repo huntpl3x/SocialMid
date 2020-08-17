@@ -21,7 +21,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
+public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
 
     public Context mContext;
     public List<Post> mPost;
@@ -35,30 +35,32 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.post_item, parent, false);
-        return new PostAdapter.ViewHolder(view);
+        return new PostAdapter.MyHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MyHolder holder, int position) {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         Post post = mPost.get(position);
         try {
-            Picasso.get().load(post.getImage()).into(ViewHolder.postIv);
+            Picasso.get().load(post.getImage()).into(holder.postIv);
         }
         catch (Exception e){
-            Picasso.get().load(R.drawable.ic_add_image).into(ViewHolder.postIv);
+            Picasso.get().load(R.drawable.ic_add_image).into(holder.postIv);
         }
 
         if (post.getDescription().equals("")){
-            ViewHolder.descriptionTv.setVisiblity(View.GONE);
+            holder.descriptionTv.setVisibility(View.GONE);
         } else {
-            ViewHolder.descriptionTv.setVisibility(View.VISIBLE);
-            ViewHolder.descriptionTv.setText(post.getDescription());
+            holder.descriptionTv.setVisibility(View.VISIBLE);
+            holder.descriptionTv.setText(post.getDescription());
         }
 
-        publisherInfo(ViewHolder.avatarIv, ViewHolder.usernameTv, post.getPublisherID());
+        holder.dateTv.setText(post.getDate());
+
+        publisherInfo(holder.avatarIv, holder.usernameTv, post.getPublisherID());
 
     }
 
@@ -68,15 +70,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
         return mPost.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    class MyHolder extends RecyclerView.ViewHolder{
 
         //layout view holder
 
         //Views
-        public ImageView avatarIv, postIv, likeIv, commentIv, shareIv;
-        public TextView usernameTv, likesTv, descriptionTv, commentsTv;
+        ImageView avatarIv, postIv, likeIv, commentIv, shareIv;
+        TextView usernameTv, likesTv, descriptionTv, commentsTv, dateTv;
 
-        public ViewHolder(@NonNull View itemView){
+        public MyHolder(@NonNull View itemView){
             super(itemView);
 
             //init
@@ -89,6 +91,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
             likesTv = itemView.findViewById(R.id.likesTv);
             descriptionTv = itemView.findViewById(R.id.descriptionTv);
             commentsTv = itemView.findViewById(R.id.commentsTv);
+            dateTv = itemView.findViewById(R.id.dateTv);
         }
     }
 
