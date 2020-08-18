@@ -26,7 +26,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
     public Context mContext;
     public List<Post> mPost;
 
-    private FirebaseUser firebaseUser;
+    FirebaseUser firebaseUser;
 
     public PostAdapter(Context mContext, List<Post> mPost){
         this.mContext = mContext;
@@ -58,9 +58,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
             holder.descriptionTv.setText(post.getDescription());
         }
 
-        holder.dateTv.setText(post.getDate());
-
-        publisherInfo(holder.avatarIv, holder.usernameTv, post.getPublisherID());
+        publisherInfo(holder.avatarIv, holder.usernameTv, holder.username2Tv, post.getPublisherID());
 
     }
 
@@ -76,7 +74,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
 
         //Views
         ImageView avatarIv, postIv, likeIv, commentIv, shareIv;
-        TextView usernameTv, likesTv, descriptionTv, commentsTv, dateTv;
+        TextView usernameTv, username2Tv, likesTv, descriptionTv, commentsTv;
 
         public MyHolder(@NonNull View itemView){
             super(itemView);
@@ -91,11 +89,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
             likesTv = itemView.findViewById(R.id.likesTv);
             descriptionTv = itemView.findViewById(R.id.descriptionTv);
             commentsTv = itemView.findViewById(R.id.commentsTv);
-            dateTv = itemView.findViewById(R.id.dateTv);
+            username2Tv = itemView.findViewById(R.id.username2Tv);
         }
     }
 
-    private void publisherInfo(final ImageView avatarIv, final TextView usernameTv, String uid){
+    private void publisherInfo(final ImageView avatarIv, final TextView usernameTv, final TextView username2Tv, String uid){
         //get path of database named "Users" containing users info
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(uid);
         //get all data from path
@@ -111,6 +109,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
                     Picasso.get().load(R.drawable.ic_add_image).into(avatarIv);
                 }
                 usernameTv.setText(user.getName());
+                username2Tv.setText(user.getName());
 
             }
 

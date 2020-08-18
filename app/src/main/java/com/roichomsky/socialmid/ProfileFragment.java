@@ -55,10 +55,6 @@ import java.util.HashMap;
 
 import static android.app.Activity.RESULT_OK;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class ProfileFragment extends Fragment {
 
     //firebase
@@ -93,7 +89,7 @@ public class ProfileFragment extends Fragment {
     Uri image_uri;
 
     //for checking profile or cover photo
-    String profilOrCoverPhoto;
+    String profileOrCoverPhoto;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -195,13 +191,13 @@ public class ProfileFragment extends Fragment {
                 if (which==0){
                     //Edit Profile Picture
                     pd.setMessage("Updating Profile Picture");
-                    profilOrCoverPhoto = "image";
+                    profileOrCoverPhoto = "image";
                     showImagePicDialog();
                 }
                 else if (which==1){
                     //Edit Cover Picture
                     pd.setMessage("Updating Cover Picture");
-                    profilOrCoverPhoto = "cover";
+                    profileOrCoverPhoto = "cover";
                     showImagePicDialog();
                 }
                 else if (which==2){
@@ -364,7 +360,7 @@ public class ProfileFragment extends Fragment {
                     }
                     else{
                         //permissions denied
-                        Toast.makeText(getActivity(), "Please enable camere & storage permission", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "Please enable camera & storage permission", Toast.LENGTH_LONG).show();
 
                     }
                 }
@@ -387,6 +383,26 @@ public class ProfileFragment extends Fragment {
         }
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void pickFromCamera() {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "Temp Pic");
+        values.put(MediaStore.Images.Media.DESCRIPTION, "Temp Description");
+        //put image uri
+        image_uri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+        //intent to start camera
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri);
+        startActivityForResult(cameraIntent, IMAGE_PICK_CAMERA_CODE);
+    }
+
+    private void pickFromGallery() {
+        //pick from gallery
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK);
+        galleryIntent.setType("image/*");
+        startActivityForResult(galleryIntent, IMAGE_PICK_GALLERY_CODE);
     }
 
     @Override
@@ -414,7 +430,7 @@ public class ProfileFragment extends Fragment {
         //show progress
         pd.show();
 
-        String filePathAndName = storagePath + "" + profilOrCoverPhoto + "_" + user.getUid();
+        String filePathAndName = storagePath + "" + profileOrCoverPhoto + "_" + user.getUid();
 
         StorageReference storageReference2nd = storageReference.child(filePathAndName);
         storageReference2nd.putFile(uri)
@@ -431,7 +447,7 @@ public class ProfileFragment extends Fragment {
                             HashMap<String, Object> results = new HashMap<>();
                             //first parameter is the key: "image" or "cover"
                             //second parameter is the value of the image url stored in the firebase storage
-                            results.put(profilOrCoverPhoto, downloadUri.toString());
+                            results.put(profileOrCoverPhoto, downloadUri.toString());
                             databaseReference.child(user.getUid()).updateChildren(results)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
@@ -468,26 +484,6 @@ public class ProfileFragment extends Fragment {
                     }
                 });
 
-    }
-
-    private void pickFromCamera() {
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, "Temp Pic");
-        values.put(MediaStore.Images.Media.DESCRIPTION, "Temp Description");
-        //put image uri
-        image_uri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-
-        //intent to start camera
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri);
-        startActivityForResult(cameraIntent, IMAGE_PICK_CAMERA_CODE);
-    }
-
-    private void pickFromGallery() {
-        //pick from gallery
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK);
-        galleryIntent.setType("image/*");
-        startActivityForResult(galleryIntent, IMAGE_PICK_GALLERY_CODE);
     }
 
     @Override

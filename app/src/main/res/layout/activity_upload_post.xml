@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UploadPostActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:layout_marginTop="10dp"
+        android:textStyle="bold"
+        android:text="Upload Post"
+        android:layout_gravity="center"
+        android:textColor="@color/colorBlack"/>
+
+    <ImageView
+        android:layout_width="720px"
+        android:layout_height="720px"
+        android:id="@+id/previewIv"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:src="@color/colorDarkGrey"/>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gallery"
+            android:background="@drawable/underline"
+            android:id="@+id/galleryBtn" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Camera"
+            android:background="@drawable/underline"
+            android:id="@+id/cameraBtn" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description:"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"
+            android:textColor="@color/colorBlack"
+            android:textSize="16sp"/>
+
+        <EditText
+            android:layout_marginStart="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:scrollbars="vertical"
+            android:inputType="textMultiLine"
+            android:overScrollMode="always"
+            android:scrollbarStyle="insideInset"
+            android:maxLength="256"
+            android:scrollHorizontally="false"
+            android:id="@+id/descriptionEt"
+            android:hint="Write a caption..."
+            android:background="@drawable/rectangle"
+            android:textSize="16sp"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/uploadBtn"
+        android:layout_gravity="center"
+        android:background="@drawable/rectangle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upload"/>
+
+</LinearLayout>

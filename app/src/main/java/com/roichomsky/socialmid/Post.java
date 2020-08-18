@@ -5,16 +5,14 @@ public class Post {
     private String image;
     private String description;
     private String publisherID;
-    private String date;
 
     public Post(){ }
 
-    public Post(String postID, String image, String description, String publisherID, String date) {
+    public Post(String postID, String image, String description, String publisherID) {
         this.postID = postID;
         this.image = image;
         this.description = description;
         this.publisherID = publisherID;
-        this.date = date;
     }
 
     public String getPostID() {
@@ -47,13 +45,5 @@ public class Post {
 
     public void setPublisherID(String publisherID) {
         this.publisherID = publisherID;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 }

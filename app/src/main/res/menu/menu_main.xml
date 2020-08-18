@@ -4,9 +4,15 @@
     <item android:id="@+id/action_logout"
         android:title="Logout"/>
 
+    <item android:id="@+id/action_upload"
+        android:title="Upload Post"
+        android:icon="@drawable/ic_upload_post"
+        app:showAsAction="always" />
+
     <item android:id="@+id/action_search"
         android:title="Search"
         android:icon="@drawable/ic_menu_search"
         app:showAsAction="always"
         app:actionViewClass="android.widget.SearchView" />
+
 </menu>

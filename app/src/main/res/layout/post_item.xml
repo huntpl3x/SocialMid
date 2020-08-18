@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <LinearLayout
@@ -90,7 +90,7 @@
         <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/usernameTv"
+        android:id="@+id/username2Tv"
             android:layout_marginStart="15dp"
         android:textColor="@color/colorBlack"
         android:text="USERNAME"
@@ -104,7 +104,7 @@
             android:id="@+id/descriptionTv"
             android:layout_marginStart="5dp"
             android:textColor="@color/colorBlack"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:text="THIS IS A DESCRIPTION TEXT VIEW"/>
 
     </LinearLayout>
@@ -117,15 +117,6 @@
         android:id="@+id/commentsTv"
         android:textColor="#808080"
         android:text="View all 000 comments"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:layout_marginStart="15dp"
-        android:id="@+id/dateTv"
-        android:textColor="#808080"
-        android:textSize="10sp"
-        android:text="17/08/2020 15:23"/>
 
 
 </LinearLayout>

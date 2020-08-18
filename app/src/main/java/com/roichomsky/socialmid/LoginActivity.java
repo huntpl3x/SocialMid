@@ -289,7 +289,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, dismiss dialog and start regiser activity.
+                            // Sign up success, dismiss dialog and start register activity.
                             progressDialog2.dismiss();
 
                             FirebaseUser user = mAuth2.getCurrentUser();
@@ -297,7 +297,7 @@ public class LoginActivity extends AppCompatActivity {
                             String email = user.getEmail();
                             String uid = user.getUid();
                             String name = mNameEt.getText().toString().trim();
-                            // When user is registered stroe user info in firebase realtime database too
+                            // When user is registered, store user info in firebase realtime database too
                             // using HashMap
                             HashMap<Object , String> hashMap = new HashMap<>();
                             hashMap.put("email", email);
