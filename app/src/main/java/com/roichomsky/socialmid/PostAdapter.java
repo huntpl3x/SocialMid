@@ -156,9 +156,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                Like likes = dataSnapshot.getValue(Like.class);
 
-               if (likes != null)
-                   likesTv.setText(likes.getLikesCounter()+" likes");
+               if (likes != null) {
+                   likesTv.setText(likes.getLikesCounter() + " likes");
                    currentLikes[0] = Integer.parseInt(likes.getLikesCounter());
+               }
            }
 
            @Override
@@ -166,9 +167,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
            }
        });
 
-       if (alreadyLiked(uid)){
-           likeBtn.setLiked(true);
-       }
+        alreadyLiked(uid, post.getPostID(), likeBtn);
 
        likeBtn.setOnLikeListener(new OnLikeListener() {
            @Override
@@ -184,7 +183,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
                            public void onSuccess(Void aVoid) {
                                likesTv.setText(currentLikes[0]+" likes");
                                HashMap<String, Object> results2 = new HashMap<>();
-                               results2.put(uid, true);
+                               results2.put(uid, "true");
                                reference2.updateChildren(results2);
                            }
                        })
@@ -221,8 +220,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
        });
    }
 
-    private boolean alreadyLiked(String uid){
-        DatabaseReference fdbRefer = FirebaseDatabase.getInstance().getReference("Likes/likedByList/"+uid);
-        return (fdbRefer != null);
+    private void alreadyLiked(final String uid, String postID, final LikeButton likeButton){
+        final boolean[] has = {false};
+        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Likes").child(postID).child("likedByList").child(uid);
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                has[0] = dataSnapshot.exists();
+                if (has[0]){
+                    likeButton.setLiked(true);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
     }
 }

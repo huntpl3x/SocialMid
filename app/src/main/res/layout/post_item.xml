@@ -82,7 +82,7 @@
         android:id="@+id/likesTv"
         android:textColor="@color/colorBlack"
         android:textStyle="bold"
-        android:text="000 LIKES"/>
+        android:text="0 likes"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -119,7 +119,7 @@
         android:layout_marginStart="15dp"
         android:id="@+id/commentsTv"
         android:textColor="#808080"
-        android:text="View all 000 comments"/>
+        android:text="View all 0 comments"/>
 
 
 </LinearLayout>
