@@ -78,10 +78,9 @@ public class HomeFragment extends Fragment {
                 postList.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Post post = ds.getValue(Post.class);
-                    /*if (!post.getPublisherID().equals(fUser.getUid())){
-                        postList.add(post);
-                    }*/
                     postList.add(post);
+
+                    Collections.reverse(postList);
 
                     //adapter
                     postAdapter = new PostAdapter(getActivity(), postList);

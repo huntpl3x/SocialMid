@@ -1,21 +1,31 @@
 package com.roichomsky.socialmid;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -43,13 +53,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
     @Override
     public void onBindViewHolder(@NonNull MyHolder holder, int position) {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        Post post = mPost.get(position);
-        try {
-            Picasso.get().load(post.getImage()).into(holder.postIv);
-        }
-        catch (Exception e){
-            Picasso.get().load(R.drawable.ic_add_image).into(holder.postIv);
-        }
+        final Post post = mPost.get(position);
 
         if (post.getDescription().equals("")){
             holder.descriptionTv.setVisibility(View.GONE);
@@ -59,7 +63,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
         }
 
         publisherInfo(holder.avatarIv, holder.usernameTv, holder.username2Tv, post.getPublisherID());
-
+        getPostImage(holder.postIv, post.getPostID());
+        addLikesToPost(post, holder.likeBtn, holder.likesTv, firebaseUser.getUid());
     }
 
     @Override
@@ -73,7 +78,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
         //layout view holder
 
         //Views
-        ImageView avatarIv, postIv, likeIv, commentIv, shareIv;
+        LikeButton likeBtn;
+        ImageView avatarIv, postIv, commentIv, shareIv;
         TextView usernameTv, username2Tv, likesTv, descriptionTv, commentsTv;
 
         public MyHolder(@NonNull View itemView){
@@ -82,7 +88,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
             //init
             avatarIv = itemView.findViewById(R.id.avatarIv);
             postIv = itemView.findViewById(R.id.postIv);
-            likeIv = itemView.findViewById(R.id.likeIv);
+            likeBtn = itemView.findViewById(R.id.likeBtn);
             commentIv = itemView.findViewById(R.id.commentIv);
             shareIv = itemView.findViewById(R.id.shareIv);
             usernameTv = itemView.findViewById(R.id.usernameTv);
@@ -118,5 +124,105 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
 
             }
         });
+    }
+
+    private void getPostImage(final ImageView postIv, String postID){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts").child(postID);
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Post post = dataSnapshot.getValue(Post.class);
+                try {
+                    Picasso.get().load(post.getPostURL()).into(postIv);
+                }
+                catch (Exception e){
+                    Picasso.get().load(R.drawable.ic_add_image).into(postIv);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void addLikesToPost(final Post post, final LikeButton likeBtn, final TextView likesTv, final String uid){
+       final int[] currentLikes = {0};
+       final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Likes").child(post.getPostID());
+       final DatabaseReference reference2 = reference.child("likedByList");
+       reference.addListenerForSingleValueEvent(new ValueEventListener() {
+           @Override
+           public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+               Like likes = dataSnapshot.getValue(Like.class);
+
+               if (likes != null)
+                   likesTv.setText(likes.getLikesCounter()+" likes");
+                   currentLikes[0] = Integer.parseInt(likes.getLikesCounter());
+           }
+
+           @Override
+           public void onCancelled(@NonNull DatabaseError databaseError) {
+           }
+       });
+
+       if (alreadyLiked(uid)){
+           likeBtn.setLiked(true);
+       }
+
+       likeBtn.setOnLikeListener(new OnLikeListener() {
+           @Override
+           public void liked(final LikeButton likeButton) {
+               likeButton.setLiked(true);
+               currentLikes[0]++;
+               HashMap<String, Object> results = new HashMap<>();
+               results.put("likesCounter", Integer.toString(currentLikes[0]));
+               results.put("postID", post.getPostID());
+               reference.updateChildren(results)
+                       .addOnSuccessListener(new OnSuccessListener<Void>() {
+                           @Override
+                           public void onSuccess(Void aVoid) {
+                               likesTv.setText(currentLikes[0]+" likes");
+                               HashMap<String, Object> results2 = new HashMap<>();
+                               results2.put(uid, true);
+                               reference2.updateChildren(results2);
+                           }
+                       })
+                       .addOnFailureListener(new OnFailureListener() {
+                           @Override
+                           public void onFailure(@NonNull Exception e) {
+                               likeButton.setLiked(false);
+                           }
+                       });
+           }
+
+           @Override
+           public void unLiked(final LikeButton likeButton) {
+               likeButton.setLiked(false);
+               HashMap<String, Object> results = new HashMap<>();
+               currentLikes[0]--;
+               results.put("likesCounter", Integer.toString(currentLikes[0]));
+               results.put("postID", post.getPostID());
+               reference.updateChildren(results)
+                       .addOnSuccessListener(new OnSuccessListener<Void>() {
+                           @Override
+                           public void onSuccess(Void aVoid) {
+                               likesTv.setText(currentLikes[0]+" likes");
+                                reference2.child(uid).removeValue();
+                           }
+                       })
+                       .addOnFailureListener(new OnFailureListener() {
+                           @Override
+                           public void onFailure(@NonNull Exception e) {
+                               likeButton.setLiked(true);
+                           }
+                       });
+           }
+       });
+   }
+
+    private boolean alreadyLiked(String uid){
+        DatabaseReference fdbRefer = FirebaseDatabase.getInstance().getReference("Likes/likedByList/"+uid);
+        return (fdbRefer != null);
     }
 }
