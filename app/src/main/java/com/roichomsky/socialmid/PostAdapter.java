@@ -1,12 +1,19 @@
 package com.roichomsky.socialmid;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +45,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
 
     FirebaseUser firebaseUser;
 
+    ProgressDialog pd;
+
     public PostAdapter(Context mContext, List<Post> mPost){
         this.mContext = mContext;
         this.mPost = mPost;
@@ -62,6 +71,29 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
             holder.descriptionTv.setText(post.getDescription());
         }
 
+        pd = new ProgressDialog(mContext);
+
+        final Intent intent = new Intent(mContext, CommentsActivity.class);
+        intent.putExtra("postID", post.getPostID());
+        intent.putExtra("publisherID", post.getPublisherID());
+        intent.putExtra("description", post.getDescription());
+
+        holder.commentsTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mContext.startActivity(intent);
+            }
+        });
+
+        holder.commentIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                firebaseUser.getUid();
+                addComment(firebaseUser.getUid(), post.getPostID(), intent);
+            }
+        });
+
+        getCommentsAmount(post.getPostID(), holder.commentsTv);
         publisherInfo(holder.avatarIv, holder.usernameTv, holder.username2Tv, post.getPublisherID());
         getPostImage(holder.postIv, post.getPostID());
         addLikesToPost(post, holder.likeBtn, holder.likesTv, firebaseUser.getUid());
@@ -234,6 +266,102 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
+    private void addComment(final String uid, String postID, final Intent intent){
+        //creates the branch for the comment
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Posts").child(postID).child("commentsList");
+        final String key = databaseReference.push().getKey();
+        assert key != null;
+        databaseReference.child(key);
+
+        //creates the dialog view
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle("Add a comment...");
+        //set layout of dialog
+        LinearLayout linearLayout = new LinearLayout(mContext);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setPadding(10,10,10,10);
+        //add edit text
+        final EditText editText = new EditText(mContext);
+        editText.setHint("Add a comment...");
+        linearLayout.addView(editText);
+
+        pd.setMessage("Adding the comment...");
+
+        builder.setView(linearLayout);
+
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //input text from edit text
+                String value = editText.getText().toString().trim();
+                if (!TextUtils.isEmpty(value)){
+                    pd.show();
+                    HashMap<String, Object> result = new HashMap<>();
+                    result.put("publisherID", uid);
+                    result.put("content", value);
+                    result.put("commentID", key);
+                    databaseReference.child(key).updateChildren(result)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    //added, dismiss progress bar
+                                    pd.dismiss();
+                                    Toast.makeText(mContext, "Added...", Toast.LENGTH_SHORT).show();
+                                    mContext.startActivity(intent);
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    //failed, dismiss progress bar, get and show error message
+                                    pd.dismiss();
+                                    Toast.makeText(mContext, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                }
+                else{
+                    Toast.makeText(mContext, "Please enter validate input", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        //add button in dialog to cancel
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        //create and show dialog
+        builder.create().show();
+    }
+
+    private void getCommentsAmount(String postID, final TextView commentsTv){
+        final long[] currentComments = {0};
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts").child(postID).child("commentsList");
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                currentComments[0] = dataSnapshot.getChildrenCount();
+                String commentsTvText = "View all "+ currentComments[0] +" comments";
+                if (currentComments[0] == 1){
+                    commentsTvText = "View 1 comment";
+                }
+                else if(currentComments[0] == 0){
+                    commentsTv.setVisibility(View.INVISIBLE);
+                }
+                else {
+                    commentsTvText = "View all "+ currentComments[0] +" comments";
+                }
+                commentsTv.setText(commentsTvText);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                commentsTv.setVisibility(View.INVISIBLE);
             }
         });
     }

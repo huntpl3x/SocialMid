@@ -69,7 +69,7 @@ public class HomeFragment extends Fragment {
     private void getAllPosts() {
         //get current user
         final FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
-        //get path of database named "Posts" containing users info
+        //get path of database named "Posts" containing posts info
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
         //get all data from path
         reference.addValueEventListener(new ValueEventListener() {

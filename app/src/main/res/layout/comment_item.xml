@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.blogspot.atifsoftwares.circularimageview.CircularImageView
+        android:layout_marginStart="10dp"
+        android:id="@+id/avatarIv"
+        android:src="@drawable/ic_default_img"
+        android:layout_marginTop="7dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/usernameTv"
+        android:layout_marginTop="7dp"
+        android:layout_marginStart="5dp"
+        android:textColor="@color/colorBlack"
+        android:text="USERNAME"
+        android:textStyle="bold"
+        android:textSize="12sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/commentTv"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="5dp"
+        android:textColor="@color/colorBlack"
+        android:textSize="14sp"
+        android:text="THIS IS A COMMENT TEXT VIEW"/>
+
+</LinearLayout>

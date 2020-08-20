@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
@@ -14,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -297,18 +299,27 @@ public class UploadPostActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        /*This method weill be called after picking image from camera or gallery*/
+        /*This method will be called after picking image from camera or gallery*/
         if (resultCode == RESULT_OK){
             if (requestCode == IMAGE_PICK_GALLERY_CODE){
                 //image is picked from gallery, get uri of image
                 image_uri = data.getData();
-                previewIv.setImageURI(image_uri);
+                if (image_uri != null) {
+                    previewIv.setImageURI(image_uri);
+                }
+                else{
+                    Toast.makeText(getApplicationContext(), "Please choose a photo", Toast.LENGTH_SHORT).show();
+                }
             }
-            if (requestCode == IMAGE_PICK_CAMERA_CODE){
+            if (requestCode == IMAGE_PICK_CAMERA_CODE) {
                 //image is picked from camera, get uri of image
-                previewIv.setImageURI(image_uri);
+                if (image_uri != null) {
+                    previewIv.setImageURI(image_uri);
+                }
+                else{
+                    Toast.makeText(getApplicationContext(), "Please choose a photo", Toast.LENGTH_SHORT).show();
+                }
             }
-
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -326,5 +337,15 @@ public class UploadPostActivity extends AppCompatActivity {
             startActivity(new Intent(UploadPostActivity.this, MainActivity.class));
             finish();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home){
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -98,8 +98,7 @@
         android:textColor="@color/colorBlack"
         android:text="USERNAME"
         android:textStyle="bold"
-        android:textSize="12sp"
-            tools:ignore="DuplicateIds" />
+        android:textSize="12sp" />
 
         <TextView
             android:layout_width="match_parent"

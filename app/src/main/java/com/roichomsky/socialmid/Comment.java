@@ -1,24 +1,16 @@
 package com.roichomsky.socialmid;
 
 public class Comment {
-    private String postID;
     private String publisherID;
     private String content;
+    private String commentID;
 
     public Comment(){}
 
-    public Comment(String postID, String publisherID, String content) {
-        this.postID = postID;
+    public Comment(String publisherID, String content, String commentID) {
         this.publisherID = publisherID;
         this.content = content;
-    }
-
-    public String getPostID() {
-        return postID;
-    }
-
-    public void setPostID(String postID) {
-        this.postID = postID;
+        this.commentID = commentID;
     }
 
     public String getPublisherID() {
@@ -35,5 +27,13 @@ public class Comment {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getCommentID() {
+        return commentID;
+    }
+
+    public void setCommentID(String commentID) {
+        this.commentID = commentID;
     }
 }
