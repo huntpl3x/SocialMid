@@ -3,10 +3,8 @@ package com.roichomsky.socialmid;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,9 +13,10 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -50,7 +49,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
-import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import static android.app.Activity.RESULT_OK;
@@ -68,10 +68,14 @@ public class ProfileFragment extends Fragment {
     //path where images of user profile and cover will be stored
     String storagePath = "Users_Profile_Cover_Images/";
 
+    ArrayList<Post> postList;
+    PostAdapter postAdapter;
+
     //views from xml
     FloatingActionButton fab;
     ImageView avatarIv, coverIv;
     TextView nameTv, emailTv;
+    RecyclerView recyclerView;
 
      //progress dialog
     ProgressDialog pd;
@@ -126,7 +130,7 @@ public class ProfileFragment extends Fragment {
 
         //retrieve user details using email
         Query query = databaseReference.orderByChild("email").equalTo(user.getEmail());
-        query.addValueEventListener(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -168,6 +172,14 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        postList = new ArrayList<>();
+
+        //init recyclerView
+        recyclerView = view.findViewById(R.id.posts_recyclerView);
+        //set it's properties
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+        getAllPosts();
         return view;
         }
 
@@ -492,6 +504,37 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    private void getAllPosts() {
+        //get current user
+        final FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+        //get path of database named "Posts" containing posts info
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
+        //get all data from path
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                postList.clear();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Post post = ds.getValue(Post.class);
+                    if (post.getPublisherID().equals(fUser.getUid())){
+                        postList.add(post);
+                    }
+
+                    Collections.reverse(postList);
+
+                    //adapter
+                    postAdapter = new PostAdapter(getActivity(), postList, fUser.getUid());
+                    recyclerView.setAdapter(postAdapter);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void checkUserStatus(){
         // Get current user
         FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -513,6 +556,8 @@ public class ProfileFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         //inflating menu
         inflater.inflate(R.menu.menu_main, menu);
+        MenuItem item = menu.findItem(R.id.action_search);
+        item.setVisible(false);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

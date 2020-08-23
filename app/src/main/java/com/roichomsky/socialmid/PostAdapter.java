@@ -6,11 +6,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,8 +23,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
@@ -42,14 +38,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
 
     public Context mContext;
     public List<Post> mPost;
+    public String profileUserUID;
 
     FirebaseUser firebaseUser;
 
     ProgressDialog pd;
 
-    public PostAdapter(Context mContext, List<Post> mPost){
+    public PostAdapter(Context mContext, List<Post> mPost, String profileUserUID){
         this.mContext = mContext;
         this.mPost = mPost;
+        this.profileUserUID = profileUserUID;
     }
 
     @NonNull
@@ -60,7 +58,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final MyHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final MyHolder holder, final int position) {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final Post post = mPost.get(position);
 
@@ -74,6 +72,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
         pd = new ProgressDialog(mContext);
 
         final Intent intent = new Intent(mContext, CommentsActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra("postID", post.getPostID());
         intent.putExtra("publisherID", post.getPublisherID());
         intent.putExtra("description", post.getDescription());
@@ -143,6 +142,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
             }
         });
 
+        holder.usernameTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!firebaseUser.getUid().equals(post.getPublisherID()) &&
+                        !profileUserUID.equals(post.getPublisherID())){
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    Intent profileIntent = new Intent(mContext, UserProfileActivity.class);
+                    profileIntent.putExtra("uid", post.getPublisherID());
+                    mContext.startActivity(profileIntent);
+                }
+            }
+        });
+
         getCommentsAmount(post.getPostID(), holder.commentsTv);
         publisherInfo(holder.avatarIv, holder.usernameTv, holder.username2Tv, post.getPublisherID());
         getPostImage(holder.postIv, post.getPostID());
@@ -161,7 +173,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
 
         //Views
         LikeButton likeBtn;
-        ImageView avatarIv, postIv, commentIv, shareIv;
+        ImageView avatarIv, postIv, commentIv;
         TextView usernameTv, username2Tv, likesTv, descriptionTv, commentsTv;
 
         public MyHolder(@NonNull View itemView){
@@ -172,7 +184,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
             postIv = itemView.findViewById(R.id.postIv);
             likeBtn = itemView.findViewById(R.id.likeBtn);
             commentIv = itemView.findViewById(R.id.commentIv);
-            shareIv = itemView.findViewById(R.id.shareIv);
             usernameTv = itemView.findViewById(R.id.usernameTv);
             likesTv = itemView.findViewById(R.id.likesTv);
             descriptionTv = itemView.findViewById(R.id.descriptionTv);
@@ -300,6 +311,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
                        });
            }
        });
+
+
    }
 
     private void alreadyLiked(final String uid, String postID, final LikeButton likeButton){

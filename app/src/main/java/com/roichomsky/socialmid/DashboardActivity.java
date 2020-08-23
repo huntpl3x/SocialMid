@@ -72,12 +72,12 @@ public class DashboardActivity extends AppCompatActivity {
                             ftl2.replace(R.id.content, profileFragment, "");
                             ftl2.commit();
                             return true;
-                        case R.id.nav_users:
-                            // Users fragment transaction
-                            actionBar.setTitle("Users"); // Change actionbar title
-                            UsersFragment userFragment = new UsersFragment();
+                        case R.id.nav_friends:
+                            // Friends fragment transaction
+                            actionBar.setTitle("Friends"); // Change actionbar title
+                            FriendsFragment friendsFragment = new FriendsFragment();
                             FragmentTransaction ftl3 = getSupportFragmentManager().beginTransaction();
-                            ftl3.replace(R.id.content, userFragment, "");
+                            ftl3.replace(R.id.content, friendsFragment, "");
                             ftl3.commit();
                             return true;
                     }

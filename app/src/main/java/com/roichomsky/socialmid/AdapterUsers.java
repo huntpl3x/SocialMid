@@ -1,6 +1,7 @@
 package com.roichomsky.socialmid;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +37,7 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MyHolder holder, final int position) {
         //Get data
         String userImage = userList.get(position).getImage();
         String userName = userList.get(position).getName();
@@ -58,7 +59,9 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "" + userEmail, Toast.LENGTH_SHORT).show();
+                Intent profileIntent = new Intent(context, UserProfileActivity.class);
+                profileIntent.putExtra("uid", userList.get(position).getUid());
+                context.startActivity(profileIntent);
             }
         });
     }

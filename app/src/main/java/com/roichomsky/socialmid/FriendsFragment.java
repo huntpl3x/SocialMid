@@ -1,6 +1,5 @@
 package com.roichomsky.socialmid;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -29,27 +28,22 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class UsersFragment extends Fragment {
+public class FriendsFragment extends Fragment {
 
     RecyclerView recyclerView;
-    AdapterUsers adapterUsers;
-    List<ModelUser> userList;
 
-    //Firebase auth
     FirebaseAuth firebaseAuth;
 
-    public UsersFragment() {
-        // Required empty public constructor
-    }
+    ArrayList<ModelUser> friendsList;
+    ArrayList<String> uidList;
+    AdapterUsers adapterUsers;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_users, container, false);
-
+        View view = inflater.inflate(R.layout.fragment_friends, container, false);
         //init recyclerView
         recyclerView = view.findViewById(R.id.users_recyclerView);
         //set it's properties
@@ -60,14 +54,16 @@ public class UsersFragment extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
 
         //init user list
-        userList = new ArrayList<>();
+        friendsList = new ArrayList<>();
+        uidList = new ArrayList<>();
 
-        //Get all users
-        getAllUsers();
+        //Get all FriendsUID
+        getAllFriendsUID();
+        getAllFriends();
         return view;
     }
 
-    private void searchUsers(final String query) {
+    private void searchUsers(final String query, final ArrayList<String> uidList) {
         //get current user
         final FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
         //get path of database named "Users" containing users info
@@ -76,21 +72,21 @@ public class UsersFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userList.clear();
+                friendsList.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     ModelUser modelUser = ds.getValue(ModelUser.class);
 
                     //get all searched users except currently signed in
-                    if (!modelUser.getUid().equals(fUser.getUid())) {
+                    if (uidList.contains(modelUser.getUid())) {
 
                         if (modelUser.getName().toLowerCase().contains(query.toLowerCase()) ||
                                 modelUser.getEmail().toLowerCase().contains(query.toLowerCase())) {
-                            userList.add(modelUser);
+                            friendsList.add(modelUser);
                         }
                     }
 
                     //adapter
-                    adapterUsers = new AdapterUsers(getActivity(), userList);
+                    adapterUsers = new AdapterUsers(getActivity(), friendsList);
                     //refresh adapter after search
                     adapterUsers.notifyDataSetChanged();
                     //set adapter to recyclerView
@@ -105,7 +101,7 @@ public class UsersFragment extends Fragment {
         });
     }
 
-    private void getAllUsers() {
+    private void getAllFriends(){
         //get current user
         final FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
         //get path of database named "Users" containing users info
@@ -114,19 +110,42 @@ public class UsersFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userList.clear();
+                friendsList.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     ModelUser modelUser = ds.getValue(ModelUser.class);
-
-                    //get all users except currently signed in
-                    if (!modelUser.getUid().equals(fUser.getUid())) {
-                        userList.add(modelUser);
+                    //get all friends
+                    if (uidList.contains(modelUser.getUid())) {
+                        friendsList.add(modelUser);
                     }
 
                     //adapter
-                    adapterUsers = new AdapterUsers(getActivity(), userList);
+                    adapterUsers = new AdapterUsers(getActivity(), friendsList);
                     //set adapter to recyclerView
                     recyclerView.setAdapter(adapterUsers);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getAllFriendsUID() {
+        //get current user
+        final FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+        //get path of database named "Users" containing users info
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(fUser.getUid()).child("friendsList");
+        DatabaseReference reference2nd = FirebaseDatabase.getInstance().getReference("Users");
+        //get all data from path
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                uidList.clear();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    String uid = ds.getValue(String.class);
+                    uidList.add(uid);
                 }
             }
 
@@ -177,11 +196,7 @@ public class UsersFragment extends Fragment {
                 //if search query is not empty then search
                 if (!TextUtils.isEmpty(s.trim())){
                     //search text contains text, search it
-                    searchUsers(s);
-                }
-                else {
-                    //search text empty get all users
-                    getAllUsers();
+                    searchUsers(s, uidList);
                 }
                 return false;
             }
@@ -192,11 +207,12 @@ public class UsersFragment extends Fragment {
                 //if search query is not empty then search
                 if (!TextUtils.isEmpty(s.trim())){
                     //search text contains text, search it
-                    searchUsers(s);
+                    //searchUsers(s);
                 }
                 else {
                     //search text empty get all users
-                    getAllUsers();
+                    getAllFriendsUID();
+                    getAllFriends();
                 }
                 return false;
             }
@@ -218,3 +234,4 @@ public class UsersFragment extends Fragment {
     }
 
 }
+

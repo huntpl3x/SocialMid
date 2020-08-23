@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ProfileFragment"
+    tools:context=".UserProfileActivity"
     android:background="@color/colorGrey">
-    
+
     <ScrollView
         android:id="@+id/bio_scrollView"
         android:layout_width="match_parent"
@@ -64,6 +64,14 @@
                         android:layout_marginStart="5dp"
                         android:textColor="@color/colorWhite" />
 
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Add Friend"
+                        android:background="#00000000"
+                        android:id="@+id/addBtn"
+                        android:textSize="16sp" />
+
 
                 </LinearLayout>
 
@@ -78,15 +86,5 @@
         android:layout_width="match_parent"
         android:layout_below="@id/bio_scrollView"
         android:layout_height="wrap_content"/>
-
-    <!--Floating Action Button-->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:src="@drawable/ic_edit_white"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="10dp" />
 
 </RelativeLayout>

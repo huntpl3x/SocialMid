@@ -67,8 +67,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void getAllPosts() {
-        //get current user
-        final FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
         //get path of database named "Posts" containing posts info
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
         //get all data from path
@@ -83,7 +81,7 @@ public class HomeFragment extends Fragment {
                     Collections.reverse(postList);
 
                     //adapter
-                    postAdapter = new PostAdapter(getActivity(), postList);
+                    postAdapter = new PostAdapter(getActivity(), postList, FirebaseAuth.getInstance().getCurrentUser().getUid());
                     recyclerView.setAdapter(postAdapter);
                 }
             }
@@ -116,6 +114,8 @@ public class HomeFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         //inflating menu
         inflater.inflate(R.menu.menu_main, menu);
+        MenuItem item = menu.findItem(R.id.action_search);
+        item.setVisible(false);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
