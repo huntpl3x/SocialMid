@@ -60,7 +60,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final MyHolder holder, int position) {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final Post post = mPost.get(position);
 
@@ -90,6 +90,56 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
             public void onClick(View v) {
                 firebaseUser.getUid();
                 addComment(firebaseUser.getUid(), post.getPostID(), intent);
+            }
+        });
+
+        holder.postIv.setOnClickListener(new DoubleClickListener() {
+            @Override
+            public void onDoubleClick() {
+                alreadyLiked(firebaseUser.getUid(), post.getPostID(), holder.likeBtn);
+
+                if (!holder.likeBtn.isLiked()){
+                    final int[] currentLikes = {0};
+                    final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Likes").child(post.getPostID());
+                    final DatabaseReference reference2 = reference.child("likedByList");
+                    reference.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Like likes = dataSnapshot.getValue(Like.class);
+
+                            if (likes != null) {
+                                holder.likesTv.setText(likes.getLikesCounter() + " likes");
+                                currentLikes[0] = Integer.parseInt(likes.getLikesCounter());
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
+
+                    holder.likeBtn.setLiked(true);
+                    currentLikes[0] = currentLikes[0]+1;
+                    HashMap<String, Object> results = new HashMap<>();
+                    results.put("likesCounter", Integer.toString(currentLikes[0]));
+                    results.put("postID", post.getPostID());
+                    reference.updateChildren(results)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    holder.likesTv.setText(currentLikes[0]+" likes");
+                                    HashMap<String, Object> results2 = new HashMap<>();
+                                    results2.put(firebaseUser.getUid(), "true");
+                                    reference2.updateChildren(results2);
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    holder.likeBtn.setLiked(false);
+                                }
+                            });
+                }
             }
         });
 
@@ -183,7 +233,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
        final int[] currentLikes = {0};
        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Likes").child(post.getPostID());
        final DatabaseReference reference2 = reference.child("likedByList");
-       reference.addListenerForSingleValueEvent(new ValueEventListener() {
+       reference.addValueEventListener(new ValueEventListener() {
            @Override
            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                Like likes = dataSnapshot.getValue(Like.class);
@@ -205,7 +255,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
            @Override
            public void liked(final LikeButton likeButton) {
                likeButton.setLiked(true);
-               currentLikes[0]++;
+               currentLikes[0] = currentLikes[0]+1;
                HashMap<String, Object> results = new HashMap<>();
                results.put("likesCounter", Integer.toString(currentLikes[0]));
                results.put("postID", post.getPostID());
@@ -231,7 +281,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
            public void unLiked(final LikeButton likeButton) {
                likeButton.setLiked(false);
                HashMap<String, Object> results = new HashMap<>();
-               currentLikes[0]--;
+               currentLikes[0] = currentLikes[0]-1;
                results.put("likesCounter", Integer.toString(currentLikes[0]));
                results.put("postID", post.getPostID());
                reference.updateChildren(results)
@@ -365,4 +415,5 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
             }
         });
     }
+
 }
