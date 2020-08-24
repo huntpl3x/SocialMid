@@ -177,6 +177,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
                                 EditDescription(post);
                             }
                             else if (which==1){
+                                FirebaseDatabase.getInstance().getReference("Likes").child(post.getPostID()).removeValue();
                                 FirebaseDatabase.getInstance().getReference("Posts").child(post.getPostID()).removeValue().addOnSuccessListener(
                                         new OnSuccessListener<Void>() {
                                             @Override
