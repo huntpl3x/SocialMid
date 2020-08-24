@@ -6,12 +6,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,6 +42,8 @@ public class CommentsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
 
+        final FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+
         //support bar
         actionBar = getSupportActionBar();
         actionBar.setTitle("Comments");
@@ -59,10 +64,22 @@ public class CommentsActivity extends AppCompatActivity {
         commentsList = new ArrayList<>();
 
         String postID = getIntent().getStringExtra("postID");
-        String publisherID = getIntent().getStringExtra("publisherID");
+        final String publisherID = getIntent().getStringExtra("publisherID");
         String description = getIntent().getStringExtra("description");
 
         publisherInfo(avatarIv, usernameTv, publisherID);
+        usernameTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!fUser.getUid().equals(publisherID) &&
+                        !getIntent().getStringExtra("baseClass").equals("UserProfileActivity")) {
+                    Intent profileIntent = new Intent(CommentsActivity.this, UserProfileActivity.class);
+                    profileIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    profileIntent.putExtra("uid", publisherID);
+                    startActivity(profileIntent);
+                }
+            }
+        });
         descriptionTv.setText(description);
         getAllComments(postID, publisherID);
     }
