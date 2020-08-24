@@ -1,7 +1,5 @@
 package com.roichomsky.socialmid;
 
-import java.util.ArrayList;
-
 public class Post {
     private String postID;
     private String postURL;

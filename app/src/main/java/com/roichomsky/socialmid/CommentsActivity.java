@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,7 +20,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class CommentsActivity extends AppCompatActivity {
 
@@ -64,7 +64,7 @@ public class CommentsActivity extends AppCompatActivity {
 
         publisherInfo(avatarIv, usernameTv, publisherID);
         descriptionTv.setText(description);
-        getAllComments(postID);
+        getAllComments(postID, publisherID);
     }
 
     private void publisherInfo(final ImageView avatarIv, final TextView usernameTv, String uid){
@@ -76,11 +76,11 @@ public class CommentsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ModelUser user = dataSnapshot.getValue(ModelUser.class);
-                try {
-                    Picasso.get().load(user.getImage()).into(avatarIv);
-                }
-                catch (Exception e){
-                    Picasso.get().load(R.drawable.ic_add_image).into(avatarIv);
+                if (user.getImage() != null){
+                    try{
+                        Picasso.get().load(user.getImage()).into(avatarIv);
+                    }
+                    catch (Exception e){ }
                 }
                 usernameTv.setText(user.getName());
             }
@@ -92,21 +92,25 @@ public class CommentsActivity extends AppCompatActivity {
         });
     }
 
-    private void getAllComments(final String postID){
+    private void getAllComments(final String postID, final String publisherID){
         //get path of database named "Comments" containing comments info
         databaseReference = FirebaseDatabase.getInstance().getReference("Posts").child(postID).child("commentsList");
         //get all comments info related to the post
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                commentsList.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren()){
                     Comment comment = ds.getValue(Comment.class);
                     commentsList.add(comment);
-
-                    commentAdapter = new CommentAdapter(getApplicationContext(), commentsList);
-
-                    recyclerView.setAdapter(commentAdapter);
                 }
+                if (getIntent().getStringExtra("baseClass").equals("UserProfileActivity")){
+                    commentAdapter = new CommentAdapter(CommentsActivity.this, commentsList, publisherID, postID);
+                }
+                else{
+                    commentAdapter = new CommentAdapter(CommentsActivity.this, commentsList, FirebaseAuth.getInstance().getCurrentUser().getUid(), postID);
+                }
+                recyclerView.setAdapter(commentAdapter);
             }
 
             @Override

@@ -95,6 +95,9 @@ public class ProfileFragment extends Fragment {
     //for checking profile or cover photo
     String profileOrCoverPhoto;
 
+    final Boolean[] avatarImage = {false};
+    final Boolean[] coverImage = {false};
+
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -128,39 +131,38 @@ public class ProfileFragment extends Fragment {
         //init progress dialog
         pd = new ProgressDialog(getActivity());
 
+        avatarIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!avatarImage[0]){
+                    avatarIv.setClickable(false);
+                    //Edit Profile Picture
+                    pd.setMessage("Updating Profile Picture");
+                    profileOrCoverPhoto = "image";
+                    showImagePicDialog();
+                }
+            }
+        });
+
         //retrieve user details using email
-        Query query = databaseReference.orderByChild("email").equalTo(user.getEmail());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                //check until required data get
-                for (DataSnapshot ds : dataSnapshot.getChildren()){
-                    //get data
-                    String name = "" + ds.child("name").getValue();
-                    String email = "" + ds.child("email").getValue();
-                    String image = "" + ds.child("image").getValue();
-                    String cover = "" + ds.child("cover").getValue();
-                    //set data
-                    nameTv.setText(name);
-                    emailTv.setText(email);
-                    try {
-                        Picasso.get().load(image).into(avatarIv);
-                    }
-                    catch (Exception e){
-                        Picasso.get().load(R.drawable.ic_add_image).into(avatarIv);
-                    }
-                    try {
-                        Picasso.get().load(cover).into(coverIv);
-                    }
-                    catch (Exception e){}
+                ModelUser userProfile = dataSnapshot.getValue(ModelUser.class);
+                nameTv.setText(userProfile.getName());
+                emailTv.setText(userProfile.getEmail());
+                if (userProfile.getImage()!= null){
+                    Picasso.get().load(userProfile.getImage()).into(avatarIv);
+                    avatarImage[0] = true;
                 }
-
+                if (userProfile.getCover()!= null){
+                    Picasso.get().load(userProfile.getCover()).into(coverIv);
+                    coverImage[0] = true;
+                }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
 
@@ -289,6 +291,13 @@ public class ProfileFragment extends Fragment {
         //shows dialog containing options Camera and Gallery to pick image
         // Options to show in dialog
         String[] options = {"Camera", "Gallery"};
+        String[] options2 = {"Camera", "Gallery", "Remove"};
+        if (avatarImage[0] && profileOrCoverPhoto.equals("image")){
+            options = options2;
+        }
+        if (coverImage[0] && profileOrCoverPhoto.equals("cover")){
+            options = options2;
+        }
         //alert dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         //set title
@@ -300,7 +309,6 @@ public class ProfileFragment extends Fragment {
                 //handle dialog item click
                 if (which==0){
                     //Camera
-
                     if (!checkCameraPermission()){
                         requestCameraPermission();
                     }
@@ -314,6 +322,15 @@ public class ProfileFragment extends Fragment {
                     }
                     else{
                         pickFromGallery();
+                    }
+                }
+                else if (which==2){
+                    FirebaseDatabase.getInstance().getReference("Users").child(user.getUid()).child(profileOrCoverPhoto).removeValue();
+                    if (profileOrCoverPhoto.equals("image")){
+                        Picasso.get().load(R.drawable.ic_add_image).into(avatarIv);
+                    }
+                    if (profileOrCoverPhoto.equals("cover")){
+                        coverIv.setImageResource(R.color.colorPrimaryDark);
                     }
                 }
             }
@@ -523,7 +540,7 @@ public class ProfileFragment extends Fragment {
                     Collections.reverse(postList);
 
                     //adapter
-                    postAdapter = new PostAdapter(getActivity(), postList, fUser.getUid());
+                    postAdapter = new PostAdapter(getActivity(), postList, fUser.getUid(), "ProfileClass");
                     recyclerView.setAdapter(postAdapter);
                 }
             }

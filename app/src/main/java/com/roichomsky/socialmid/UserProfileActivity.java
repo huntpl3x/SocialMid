@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -80,25 +81,20 @@ public class UserProfileActivity extends AppCompatActivity {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ModelUser user = dataSnapshot.getValue(ModelUser.class);
+                ModelUser userProfile = dataSnapshot.getValue(ModelUser.class);
 
-                actionBar.setTitle(user.getName());
+                actionBar.setTitle(userProfile.getName());
 
-                nameTv.setText(user.getName());
-                emailTv.setText(user.getEmail());
-
-                try {
-                    Picasso.get().load(user.getImage()).into(avatarIv);
+                nameTv.setText(userProfile.getName());
+                emailTv.setText(userProfile.getEmail());
+                if (userProfile.getImage()!= null){
+                    Picasso.get().load(userProfile.getImage()).into(avatarIv);
                 }
-                catch (Exception e){
-                    Picasso.get().load(R.drawable.ic_add_image).into(avatarIv);
+                if (userProfile.getCover() != null){
+                    Picasso.get().load(userProfile.getCover()).into(coverIv);
                 }
-                try {
-                    Picasso.get().load(user.getCover()).into(coverIv);
-                }
-                catch (Exception e){}
 
-                getAllPosts(user);
+                getAllPosts(userProfile);
             }
 
             @Override
@@ -110,12 +106,14 @@ public class UserProfileActivity extends AppCompatActivity {
         alreadyFriend(uid, addBtn);
 
         addBtn.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("ResourceAsColor")
             @Override
             public void onClick(View v) {
                 DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid())
                         .child("friendsList").child(uid);
                 if (!addBtn.getText().equals("Friends")){
                     reference.setValue(uid).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @SuppressLint("ResourceAsColor")
                         @Override
                         public void onSuccess(Void aVoid) {
                             Toast.makeText(getApplicationContext(), "Added...", Toast.LENGTH_SHORT).show();
@@ -148,7 +146,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     Collections.reverse(postList);
 
                     //adapter
-                    postAdapter = new PostAdapter(UserProfileActivity.this, postList, user.getUid());
+                    postAdapter = new PostAdapter(UserProfileActivity.this, postList, user.getUid(), "UserProfileActivity");
                     recyclerView.setAdapter(postAdapter);
                 }
             }

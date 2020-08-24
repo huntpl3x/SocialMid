@@ -11,25 +11,49 @@
         android:layout_width="40dp"
         android:layout_height="40dp" />
 
-    <TextView
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/usernameTv"
-        android:layout_marginTop="7dp"
-        android:layout_marginStart="5dp"
-        android:textColor="@color/colorBlack"
-        android:text="USERNAME"
-        android:textStyle="bold"
-        android:textSize="12sp" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/commentTv"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="5dp"
-        android:textColor="@color/colorBlack"
-        android:textSize="14sp"
-        android:text="THIS IS A COMMENT TEXT VIEW"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/usernameTv"
+                android:layout_marginStart="5dp"
+                android:textColor="@color/colorBlack"
+                android:text="USERNAME"
+                android:textStyle="bold"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/commentTv"
+                android:layout_marginTop="1dp"
+                android:layout_marginStart="5dp"
+                android:textColor="@color/colorBlack"
+                android:textSize="14sp"
+                android:text="THIS IS A COMMENT TEXT VIEW" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete Comment"
+            android:textSize="11sp"
+            android:visibility="invisible"
+            android:id="@+id/dltTv"
+            android:textColor="@color/colorDarkGrey"
+            android:layout_marginStart="8dp"/>
+
+    </LinearLayout>
 
 </LinearLayout>

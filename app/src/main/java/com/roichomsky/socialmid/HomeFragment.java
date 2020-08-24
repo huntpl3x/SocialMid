@@ -81,7 +81,7 @@ public class HomeFragment extends Fragment {
                     Collections.reverse(postList);
 
                     //adapter
-                    postAdapter = new PostAdapter(getActivity(), postList, FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    postAdapter = new PostAdapter(getActivity(), postList, FirebaseAuth.getInstance().getCurrentUser().getUid(), "HomeClass");
                     recyclerView.setAdapter(postAdapter);
                 }
             }

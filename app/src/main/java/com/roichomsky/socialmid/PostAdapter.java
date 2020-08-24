@@ -39,15 +39,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
     public Context mContext;
     public List<Post> mPost;
     public String profileUserUID;
+    public String baseClass;
 
     FirebaseUser firebaseUser;
 
     ProgressDialog pd;
 
-    public PostAdapter(Context mContext, List<Post> mPost, String profileUserUID){
+    public PostAdapter(Context mContext, List<Post> mPost, String profileUserUID, String baseClass){
         this.mContext = mContext;
         this.mPost = mPost;
         this.profileUserUID = profileUserUID;
+        this.baseClass = baseClass;
     }
 
     @NonNull
@@ -76,6 +78,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
         intent.putExtra("postID", post.getPostID());
         intent.putExtra("publisherID", post.getPublisherID());
         intent.putExtra("description", post.getDescription());
+        intent.putExtra("baseClass", baseClass);
 
         holder.commentsTv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,13 +150,53 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
             public void onClick(View v) {
                 if (!firebaseUser.getUid().equals(post.getPublisherID()) &&
                         !profileUserUID.equals(post.getPublisherID())){
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     Intent profileIntent = new Intent(mContext, UserProfileActivity.class);
+                    profileIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     profileIntent.putExtra("uid", post.getPublisherID());
                     mContext.startActivity(profileIntent);
                 }
             }
         });
+
+        if (post.getPublisherID().equals(firebaseUser.getUid())){
+            holder.optionIv.setVisibility(View.VISIBLE);
+            holder.optionIv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String[] options = {"Edit Description", "Delete Post"};
+
+                    //alert dialog
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    //set title
+                    builder.setTitle("Post Options");
+
+                    builder.setItems(options, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (which==0){
+                                EditDescription(post);
+                            }
+                            else if (which==1){
+                                FirebaseDatabase.getInstance().getReference("Posts").child(post.getPostID()).removeValue().addOnSuccessListener(
+                                        new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Toast.makeText(mContext, "Post has been deleted...", Toast.LENGTH_LONG).show();
+                                            }
+                                        }
+                                ).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(mContext, "Failed to delete...", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    builder.create().show();
+                }
+            });
+        }
 
         getCommentsAmount(post.getPostID(), holder.commentsTv);
         publisherInfo(holder.avatarIv, holder.usernameTv, holder.username2Tv, post.getPublisherID());
@@ -173,13 +216,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
 
         //Views
         LikeButton likeBtn;
-        ImageView avatarIv, postIv, commentIv;
+        ImageView avatarIv, postIv, commentIv, optionIv;
         TextView usernameTv, username2Tv, likesTv, descriptionTv, commentsTv;
 
         public MyHolder(@NonNull View itemView){
             super(itemView);
 
             //init
+            optionIv = itemView.findViewById(R.id.optionIv);
             avatarIv = itemView.findViewById(R.id.avatarIv);
             postIv = itemView.findViewById(R.id.postIv);
             likeBtn = itemView.findViewById(R.id.likeBtn);
@@ -201,11 +245,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ModelUser user = dataSnapshot.getValue(ModelUser.class);
-                try {
-                    Picasso.get().load(user.getImage()).into(avatarIv);
-                }
-                catch (Exception e){
-                    Picasso.get().load(R.drawable.ic_add_image).into(avatarIv);
+                if (user.getImage() != null){
+                    try{
+                        Picasso.get().load(user.getImage()).into(avatarIv);
+                    }
+                    catch (Exception e){ }
                 }
                 usernameTv.setText(user.getName());
                 username2Tv.setText(user.getName());
@@ -429,4 +473,56 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
         });
     }
 
+    private void EditDescription(final Post post) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle("Edit Description");
+        //set layout of dialog
+        LinearLayout linearLayout = new LinearLayout(mContext);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setPadding(10,10,10,10);
+        //add edit text
+        final EditText editText = new EditText(mContext);
+        editText.setHint("Enter Description");
+        linearLayout.addView(editText);
+
+        builder.setView(linearLayout);
+
+        builder.setPositiveButton("Edit", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //input text from edit text
+                String value = editText.getText().toString().trim();
+                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts").child(post.getPostID()).child("description");
+                if (!TextUtils.isEmpty(value)){
+                    pd.setMessage("Updating...");
+                    pd.show();
+                    reference.setValue(value).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            pd.dismiss();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            pd.dismiss();
+                            Toast.makeText(mContext, "Failed to update...", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+                else{
+                    Toast.makeText(mContext, "Please enter validate input", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        //add button in dialog to cancel
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.create().show();
+    }
 }

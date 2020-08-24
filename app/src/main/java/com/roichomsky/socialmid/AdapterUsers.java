@@ -9,6 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -37,7 +40,7 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final MyHolder holder, final int position) {
         //Get data
         String userImage = userList.get(position).getImage();
         String userName = userList.get(position).getName();
@@ -64,6 +67,15 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
                 context.startActivity(profileIntent);
             }
         });
+
+        holder.unfriendTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                reference.child("friendsList").child(userList.get(position).getUid()).removeValue();
+                Toast.makeText(context, "Unfriended...", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -75,12 +87,13 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
     class MyHolder extends RecyclerView.ViewHolder{
 
         ImageView mAvatarIv;
-        TextView mNameTv, mEmailTv;
+        TextView mNameTv, mEmailTv, unfriendTv;
 
         public MyHolder(@NonNull View itemView){
             super(itemView);
 
             //init views
+            unfriendTv = itemView.findViewById(R.id.unfriendTv);
             mAvatarIv = itemView.findViewById(R.id.avatarIv);
             mNameTv = itemView.findViewById(R.id.nameTv);
             mEmailTv = itemView.findViewById(R.id.emailTv);

@@ -1,7 +1,6 @@
 package com.roichomsky.socialmid;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class Like {
     private String likesCounter;

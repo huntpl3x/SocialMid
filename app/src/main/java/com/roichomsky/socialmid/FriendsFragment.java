@@ -139,7 +139,7 @@ public class FriendsFragment extends Fragment {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(fUser.getUid()).child("friendsList");
         DatabaseReference reference2nd = FirebaseDatabase.getInstance().getReference("Users");
         //get all data from path
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 uidList.clear();
