@@ -93,21 +93,6 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void checkUserStatus(){
-        // Get current user
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user != null){
-            //user is signed in stay here
-            //set email of logged in user
-            //mProfileTv.setText(user.getEmail());
-        }
-        else {
-            //user is'nt signed go to main activity
-            startActivity(new Intent(getActivity(), MainActivity.class));
-            getActivity().finish();
-        }
-    }
-
     //inflate option menu
 
     @Override
@@ -125,7 +110,7 @@ public class HomeFragment extends Fragment {
         int id = item.getItemId();
         if (id==R.id.action_logout){
             firebaseAuth.signOut();
-            checkUserStatus();
+            getActivity().startService(new Intent(getActivity(), UserService.class));
         }
         if (id==R.id.action_upload){
             startActivity(new Intent(getContext(), UploadPostActivity.class));

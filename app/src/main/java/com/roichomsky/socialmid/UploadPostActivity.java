@@ -87,7 +87,6 @@ public class UploadPostActivity extends AppCompatActivity {
         //init arrays of permissions
         cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        checkUserStatus();
 
         galleryBtn = findViewById(R.id.galleryBtn);
         cameraBtn = findViewById(R.id.cameraBtn);
@@ -315,21 +314,6 @@ public class UploadPostActivity extends AppCompatActivity {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private void checkUserStatus(){
-        // Get current user
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user != null){
-            //user is signed in stay here
-            //set email of logged in user
-            //mProfileTv.setText(user.getEmail());
-        }
-        else {
-            //user is'nt signed go to main activity
-            startActivity(new Intent(UploadPostActivity.this, MainActivity.class));
-            finish();
-        }
     }
 
     @Override

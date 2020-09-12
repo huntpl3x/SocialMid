@@ -86,25 +86,10 @@ public class DashboardActivity extends AppCompatActivity {
                 }
             };
 
-    private void checkUserStatus(){
-        // Get current user
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user != null){
-            //user is signed in stay here
-            //set email of logged in user
-            //mProfileTv.setText(user.getEmail());
-        }
-        else {
-            //user is'nt signed go to main activity
-            startActivity(new Intent(DashboardActivity.this, MainActivity.class));
-            finish();
-        }
-    }
-
     @Override
     protected void onStart() {
         //checks on start of app
-        checkUserStatus();
+        startService(new Intent(this, UserService.class));
         super.onStart();
     }
 }

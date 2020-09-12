@@ -162,19 +162,25 @@ public class FriendsFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-    private void checkUserStatus(){
-        // Get current user
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user != null){
-            //user is signed in stay here
-            //set email of logged in user
-            //mProfileTv.setText(user.getEmail());
-        }
-        else {
-            //user is'nt signed go to main activity
-            startActivity(new Intent(getActivity(), MainActivity.class));
-            getActivity().finish();
-        }
+    public void likesNotification(){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Likes");
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()){
+                    Like like = ds.getValue(Like.class);
+                    if (Integer.parseInt(like.getLikesCounter()) >= 10){
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     //inflate option menu
@@ -228,7 +234,7 @@ public class FriendsFragment extends Fragment {
         int id = item.getItemId();
         if (id==R.id.action_logout){
             firebaseAuth.signOut();
-            checkUserStatus();
+            getActivity().startService(new Intent(getActivity(), UserService.class));
         }
         return super.onOptionsItemSelected(item);
     }
