@@ -42,7 +42,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -149,7 +148,7 @@ public class ProfileFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ModelUser userProfile = dataSnapshot.getValue(ModelUser.class);
+                User userProfile = dataSnapshot.getValue(User.class);
                 nameTv.setText(userProfile.getName());
                 emailTv.setText(userProfile.getEmail());
                 if (userProfile.getImage()!= null){

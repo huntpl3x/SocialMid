@@ -121,7 +121,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyHolder
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ModelUser user = dataSnapshot.getValue(ModelUser.class);
+                User user = dataSnapshot.getValue(User.class);
                 if (user.getImage() != null){
                     try{
                         Picasso.get().load(user.getImage()).into(avatarIv);

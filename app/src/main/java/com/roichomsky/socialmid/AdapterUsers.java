@@ -22,10 +22,10 @@ import androidx.recyclerview.widget.RecyclerView;
 public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
 
     private Context context;
-    private List<ModelUser> userList;
+    private List<User> userList;
 
     //Constructor
-    public AdapterUsers(Context context, List<ModelUser> userList) {
+    public AdapterUsers(Context context, List<User> userList) {
         this.context = context;
         this.userList = userList;
     }

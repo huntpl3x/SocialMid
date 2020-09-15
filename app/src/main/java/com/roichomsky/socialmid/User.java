@@ -1,6 +1,6 @@
 package com.roichomsky.socialmid;
 
-public class ModelUser {
+public class User {
 
     //use same name as in firebase database
     private String uid;
@@ -10,11 +10,11 @@ public class ModelUser {
     private String image;
     private String cover;
 
-    public ModelUser(){
+    public User(){
 
     }
 
-    public ModelUser(String uid, String name, String email, String search, String image, String cover) {
+    public User(String uid, String name, String email, String search, String image, String cover) {
         this.uid = uid;
         this.name = name;
         this.email = email;

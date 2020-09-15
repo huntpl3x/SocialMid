@@ -81,7 +81,7 @@ public class UserProfileActivity extends AppCompatActivity {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ModelUser userProfile = dataSnapshot.getValue(ModelUser.class);
+                User userProfile = dataSnapshot.getValue(User.class);
 
                 actionBar.setTitle(userProfile.getName());
 
@@ -129,7 +129,7 @@ public class UserProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void getAllPosts(final ModelUser user) {
+    private void getAllPosts(final User user) {
         //get path of database named "Posts" containing posts info
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
         //get all data from path

@@ -35,7 +35,7 @@ public class FriendsFragment extends Fragment {
 
     FirebaseAuth firebaseAuth;
 
-    ArrayList<ModelUser> friendsList;
+    ArrayList<User> friendsList;
     ArrayList<String> uidList;
     AdapterUsers adapterUsers;
 
@@ -74,14 +74,14 @@ public class FriendsFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 friendsList.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    ModelUser modelUser = ds.getValue(ModelUser.class);
+                    User user = ds.getValue(User.class);
 
                     //get all searched users except currently signed in
-                    if (uidList.contains(modelUser.getUid())) {
+                    if (uidList.contains(user.getUid())) {
 
-                        if (modelUser.getName().toLowerCase().contains(query.toLowerCase()) ||
-                                modelUser.getEmail().toLowerCase().contains(query.toLowerCase())) {
-                            friendsList.add(modelUser);
+                        if (user.getName().toLowerCase().contains(query.toLowerCase()) ||
+                                user.getEmail().toLowerCase().contains(query.toLowerCase())) {
+                            friendsList.add(user);
                         }
                     }
 
@@ -112,10 +112,10 @@ public class FriendsFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 friendsList.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    ModelUser modelUser = ds.getValue(ModelUser.class);
+                    User user = ds.getValue(User.class);
                     //get all friends
-                    if (uidList.contains(modelUser.getUid())) {
-                        friendsList.add(modelUser);
+                    if (uidList.contains(user.getUid())) {
+                        friendsList.add(user);
                     }
 
                     //adapter
