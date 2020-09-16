@@ -179,27 +179,6 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             //dismisses the progressBar
                             progressDialog.dismiss();
-                            // Sign in success, update UI with the signed-in user's information
-                            FirebaseUser user = mAuth.getCurrentUser();
-
-                            //if user is signing in first time then get and show user info
-                            if (task.getResult().getAdditionalUserInfo().isNewUser()){
-                                // Get user email and uid from auth
-                                String email = user.getEmail();
-                                String uid = user.getUid();
-                                // When user is registered store user info in firebase realtime database too
-                                // using HashMap
-                                HashMap<Object , String> hashMap = new HashMap<>();
-                                hashMap.put("email", email);
-                                hashMap.put("uid", uid);
-                                hashMap.put("name", "");
-                                // firebase database instance
-                                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                // Path to store user data named "Users"
-                                DatabaseReference reference = database.getReference("Users");
-                                // Put data withing hashmap in database
-                                reference.child(uid).setValue(hashMap);
-                            }
                             //user is logged in, so start DashboardActivity
                             startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
                             finish();
@@ -210,16 +189,7 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "Login failed.", Toast.LENGTH_SHORT).show();
                         }
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                //dismisses the progressBar
-                progressDialog.dismiss();
-                //error, get and show error message
-                Toast.makeText(LoginActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-
-            }
-        });
+                });
     }
 
     public boolean onSupportNavigateUp(){

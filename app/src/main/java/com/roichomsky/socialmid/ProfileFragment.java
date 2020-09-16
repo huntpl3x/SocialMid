@@ -73,7 +73,8 @@ public class ProfileFragment extends Fragment {
     //views from xml
     FloatingActionButton fab;
     ImageView avatarIv, coverIv;
-    TextView nameTv, emailTv;
+    TextView nameTv, emailTv, noPostsBtn;
+    LinearLayout noPostsLl;
     RecyclerView recyclerView;
 
      //progress dialog
@@ -126,9 +127,19 @@ public class ProfileFragment extends Fragment {
         coverIv = view.findViewById(R.id.coverIv);
         nameTv = view.findViewById(R.id.nameTv);
         emailTv = view.findViewById(R.id.emailTv);
+        noPostsLl = view.findViewById(R.id.noPostsLl);
+        noPostsBtn = view.findViewById(R.id.noPostsBtn);
+
 
         //init progress dialog
         pd = new ProgressDialog(getActivity());
+
+        noPostsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), UploadPostActivity.class));
+            }
+        });
 
         avatarIv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,6 +154,27 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        //fab on click
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShowEditProfileDialog();
+            }
+        });
+
+        postList = new ArrayList<>();
+
+        //init recyclerView
+        recyclerView = view.findViewById(R.id.posts_recyclerView);
+        //set it's properties
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+        retrieveUserData();
+        getAllPosts();
+        return view;
+        }
+
+    private void retrieveUserData() {
         //retrieve user details using email
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
         reference.addValueEventListener(new ValueEventListener() {
@@ -164,25 +196,7 @@ public class ProfileFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-
-        //fab on click
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ShowEditProfileDialog();
-            }
-        });
-
-        postList = new ArrayList<>();
-
-        //init recyclerView
-        recyclerView = view.findViewById(R.id.posts_recyclerView);
-        //set it's properties
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setHasFixedSize(true);
-        getAllPosts();
-        return view;
-        }
+    }
 
     private void ShowEditProfileDialog() {
         /*Show dialog containing options
@@ -537,6 +551,9 @@ public class ProfileFragment extends Fragment {
                     }
 
                     Collections.reverse(postList);
+                    if (postList.isEmpty()){
+                        noPostsLl.setVisibility(View.VISIBLE);
+                    }
 
                     //adapter
                     postAdapter = new PostAdapter(getActivity(), postList, fUser.getUid(), "ProfileClass");
@@ -572,6 +589,9 @@ public class ProfileFragment extends Fragment {
         if (id==R.id.action_logout){
             firebaseAuth.signOut();
             getActivity().startService(new Intent(getActivity(), UserService.class));
+        }
+        if (id==R.id.action_upload){
+            startActivity(new Intent(getContext(), UploadPostActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }

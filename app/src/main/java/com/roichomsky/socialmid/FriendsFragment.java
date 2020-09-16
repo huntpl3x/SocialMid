@@ -236,6 +236,9 @@ public class FriendsFragment extends Fragment {
             firebaseAuth.signOut();
             getActivity().startService(new Intent(getActivity(), UserService.class));
         }
+        if (id==R.id.action_upload){
+            startActivity(new Intent(getContext(), UploadPostActivity.class));
+        }
         return super.onOptionsItemSelected(item);
     }
 

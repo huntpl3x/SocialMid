@@ -79,6 +79,33 @@
         android:layout_below="@id/bio_scrollView"
         android:layout_height="wrap_content"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/noPostsLl"
+        android:visibility="invisible"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="When you share photos, they'll appear on your profile."
+            android:layout_gravity="center"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/noPostsBtn"
+            android:text="Share new post"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_gravity="center" />
+
+    </LinearLayout>
+
     <!--Floating Action Button-->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
