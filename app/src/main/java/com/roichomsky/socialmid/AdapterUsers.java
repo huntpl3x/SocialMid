@@ -68,7 +68,7 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
             }
         });
 
-        holder.unfriendTv.setOnClickListener(new View.OnClickListener() {
+        holder.unFriendTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -87,13 +87,13 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
     class MyHolder extends RecyclerView.ViewHolder{
 
         ImageView mAvatarIv;
-        TextView mNameTv, mEmailTv, unfriendTv;
+        TextView mNameTv, mEmailTv, unFriendTv;
 
         public MyHolder(@NonNull View itemView){
             super(itemView);
 
             //init views
-            unfriendTv = itemView.findViewById(R.id.unfriendTv);
+            unFriendTv = itemView.findViewById(R.id.unfriendTv);
             mAvatarIv = itemView.findViewById(R.id.avatarIv);
             mNameTv = itemView.findViewById(R.id.nameTv);
             mEmailTv = itemView.findViewById(R.id.emailTv);

@@ -127,9 +127,10 @@ public class ProfileFragment extends Fragment {
         coverIv = view.findViewById(R.id.coverIv);
         nameTv = view.findViewById(R.id.nameTv);
         emailTv = view.findViewById(R.id.emailTv);
-        noPostsLl = view.findViewById(R.id.noPostsLl);
         noPostsBtn = view.findViewById(R.id.noPostsBtn);
+        noPostsLl = view.findViewById(R.id.noPostsLl);
 
+        postList = new ArrayList<>();
 
         //init progress dialog
         pd = new ProgressDialog(getActivity());
@@ -161,8 +162,6 @@ public class ProfileFragment extends Fragment {
                 ShowEditProfileDialog();
             }
         });
-
-        postList = new ArrayList<>();
 
         //init recyclerView
         recyclerView = view.findViewById(R.id.posts_recyclerView);
@@ -546,19 +545,20 @@ public class ProfileFragment extends Fragment {
                 postList.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Post post = ds.getValue(Post.class);
-                    if (post.getPublisherID().equals(fUser.getUid())){
+                    if (post.getPublisherID().equals(fUser.getUid())) {
                         postList.add(post);
                     }
-
-                    Collections.reverse(postList);
-                    if (postList.isEmpty()){
-                        noPostsLl.setVisibility(View.VISIBLE);
-                    }
-
-                    //adapter
-                    postAdapter = new PostAdapter(getActivity(), postList, fUser.getUid(), "ProfileClass");
-                    recyclerView.setAdapter(postAdapter);
                 }
+
+                if (postList.isEmpty()){
+                    noPostsLl.setVisibility(View.VISIBLE);
+                }
+
+                Collections.reverse(postList);
+
+                //adapter
+                postAdapter = new PostAdapter(getActivity(), postList, fUser.getUid(), "ProfileClass");
+                recyclerView.setAdapter(postAdapter);
             }
 
             @Override
@@ -578,6 +578,7 @@ public class ProfileFragment extends Fragment {
         item.setVisible(false);
         super.onCreateOptionsMenu(menu, inflater);
     }
+
 
 
     //handle menu item click

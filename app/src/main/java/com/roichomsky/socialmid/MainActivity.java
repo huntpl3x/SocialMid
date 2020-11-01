@@ -30,6 +30,8 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
+    //3310 JAVA CODING LINES
+
     //views
     EditText mEmailEt, mPasswordEt, mNameEt;
     TextView mHaveAccountTv;
