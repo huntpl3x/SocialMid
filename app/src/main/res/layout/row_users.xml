@@ -20,36 +20,36 @@
             android:src="@drawable/ic_default_img"
             android:layout_width="70dp"
             android:layout_height="70dp"/>
-        
+
         <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/nameTv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Person Name"
-                android:textSize="18sp"
-                android:textColor="@color/colorBlack"/>
+                android:textColor="@color/colorBlack"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/emailTv"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Person Email"
-                android:textColor="@color/colorBlack"/>
+                android:textColor="@color/colorBlack" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Unfriend"
-                android:layout_marginTop="3dp"
-                android:textAlignment="center"
-                android:textColor="@color/colorBlack"
                 android:id="@+id/unfriendTv"
-                android:background="@drawable/rectangle"/>
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:background="@drawable/rectangle"
+                android:text="Unfriend"
+                android:textAlignment="center"
+                android:textColor="@color/colorBlack" />
 
         </LinearLayout>
 

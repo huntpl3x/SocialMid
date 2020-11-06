@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,9 @@ import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -199,7 +203,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
             });
         }
 
-        getCommentsAmount(post.getPostID(), holder.commentsTv);
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(Long.parseLong(post.getTimestamp()));
+        Date d = c.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        holder.timeTv.setText(sdf.format(d));
+
+        getCommentsAmount(post.getPostID(), holder.commentsTv, holder.timeTv);
         publisherInfo(holder.avatarIv, holder.usernameTv, holder.username2Tv, post.getPublisherID());
         getPostImage(holder.postIv, post.getPostID());
         addLikesToPost(post, holder.likeBtn, holder.likesTv, firebaseUser.getUid());
@@ -218,7 +228,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
         //Views
         LikeButton likeBtn;
         ImageView avatarIv, postIv, commentIv, optionIv;
-        TextView usernameTv, username2Tv, likesTv, descriptionTv, commentsTv;
+        TextView usernameTv, username2Tv, likesTv, descriptionTv, commentsTv, timeTv;
 
         public MyHolder(@NonNull View itemView){
             super(itemView);
@@ -234,6 +244,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
             descriptionTv = itemView.findViewById(R.id.descriptionTv);
             commentsTv = itemView.findViewById(R.id.commentsTv);
             username2Tv = itemView.findViewById(R.id.username2Tv);
+            timeTv = itemView.findViewById(R.id.timeTv);
         }
     }
 
@@ -447,7 +458,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
         builder.create().show();
     }
 
-    private void getCommentsAmount(String postID, final TextView commentsTv){
+    private void getCommentsAmount(String postID, final TextView commentsTv, final TextView timeTv){
         final long[] currentComments = {0};
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts").child(postID).child("commentsList");
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -460,6 +471,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
                 }
                 else if(currentComments[0] == 0){
                     commentsTv.setVisibility(View.INVISIBLE);
+                    RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                    params1.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                    timeTv.setLayoutParams(params1);
                 }
                 else {
                     commentsTvText = "View all "+ currentComments[0] +" comments";

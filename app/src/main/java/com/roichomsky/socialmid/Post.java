@@ -6,15 +6,17 @@ public class Post {
     private String description;
     private String publisherID;
     private String likesCounter;
+    private String timestamp;
 
     public Post(){ }
 
-    public Post(String description,String postID, String postURL, String publisherID, String likesCounter) {
+    public Post(String description,String postID, String postURL, String publisherID, String likesCounter, String timestamp) {
         this.postID = postID;
         this.postURL = postURL;
         this.description = description;
         this.publisherID = publisherID;
         this.likesCounter = likesCounter;
+        this.timestamp = timestamp;
     }
 
     public String getPostID() {
@@ -55,5 +57,13 @@ public class Post {
 
     public void setLikesCounter(String likesCounter) {
         this.likesCounter = likesCounter;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 }

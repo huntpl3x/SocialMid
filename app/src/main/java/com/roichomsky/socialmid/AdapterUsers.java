@@ -58,8 +58,15 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
 
         }
 
-        //handle item click
         holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO
+            }
+        });
+
+        //handle item click
+        holder.mAvatarIv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent profileIntent = new Intent(context, UserProfileActivity.class);

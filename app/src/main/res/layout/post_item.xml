@@ -121,14 +121,29 @@
 
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
+    <RelativeLayout
         android:layout_marginStart="15dp"
-        android:id="@+id/commentsTv"
-        android:textColor="#808080"
-        android:text="View all 0 comments"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:id="@+id/commentsTv"
+            android:textColor="#808080"
+            android:text="View all 0 comments"/>
+
+        <TextView
+            android:layout_below="@+id/commentsTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:textSize="11sp"
+            android:id="@+id/timeTv"
+            android:textColor="#808080"
+            android:text="00/00/00 00:00 AM"/>
+
+    </RelativeLayout>
 
 </LinearLayout>

@@ -29,7 +29,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         // Actionbar and its title
         actionBar = getSupportActionBar();
-        actionBar.setTitle("Profile");
+        actionBar.setTitle("SocialMid");
 
         //init firebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();
@@ -40,7 +40,7 @@ public class DashboardActivity extends AppCompatActivity {
         navigationView.setOnNavigationItemSelectedListener(selectedListener);
 
         // Home fragment transaction (default, on start)
-        actionBar.setTitle("Home"); // Change actionbar title
+        //actionBar.setTitle("Home"); // Change actionbar title
         HomeFragment homeFragment = new HomeFragment();
         FragmentTransaction ftl = getSupportFragmentManager().beginTransaction();
         ftl.replace(R.id.content, homeFragment, "");
@@ -58,7 +58,7 @@ public class DashboardActivity extends AppCompatActivity {
                     switch (menuItem.getItemId()){
                         case R.id.nav_home:
                             // Home fragment transaction
-                            actionBar.setTitle("Home"); // Change actionbar title
+                            //actionBar.setTitle("Home"); // Change actionbar title
                             HomeFragment homeFragment = new HomeFragment();
                             FragmentTransaction ftl = getSupportFragmentManager().beginTransaction();
                             ftl.replace(R.id.content, homeFragment, "");
@@ -66,7 +66,7 @@ public class DashboardActivity extends AppCompatActivity {
                             return true;
                         case R.id.nav_profile:
                             // Profile fragment transaction
-                            actionBar.setTitle("Profile"); // Change actionbar title
+                            //actionBar.setTitle("Profile"); // Change actionbar title
                             ProfileFragment profileFragment = new ProfileFragment();
                             FragmentTransaction ftl2 = getSupportFragmentManager().beginTransaction();
                             ftl2.replace(R.id.content, profileFragment, "");
@@ -74,7 +74,7 @@ public class DashboardActivity extends AppCompatActivity {
                             return true;
                         case R.id.nav_friends:
                             // Friends fragment transaction
-                            actionBar.setTitle("Friends"); // Change actionbar title
+                            //actionBar.setTitle("Friends"); // Change actionbar title
                             FriendsFragment friendsFragment = new FriendsFragment();
                             FragmentTransaction ftl3 = getSupportFragmentManager().beginTransaction();
                             ftl3.replace(R.id.content, friendsFragment, "");

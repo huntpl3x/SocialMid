@@ -32,6 +32,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 
 public class UploadPostActivity extends AppCompatActivity {
@@ -229,7 +230,7 @@ public class UploadPostActivity extends AppCompatActivity {
         pd.show();
 
         String filePathAndName = storagePath + "" + "post" + "_" + uri.toString();
-
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         StorageReference storageReference2nd = storageReference.child(filePathAndName);
         storageReference2nd.putFile(uri)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -250,6 +251,7 @@ public class UploadPostActivity extends AppCompatActivity {
                             results.put("publisherID", user.getUid());
                             String postID = databaseReference.push().getKey();
                             results.put("postID", postID);
+                            results.put("timestamp", Long.toString(timestamp.getTime()));
                             databaseReference.child(postID).updateChildren(results)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
