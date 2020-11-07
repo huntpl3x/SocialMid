@@ -14,7 +14,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".UserProfileActivity"/>
+        <activity android:name=".ChatActivity"></activity>
+        <activity android:name=".UserProfileActivity" />
         <activity android:name=".CommentsActivity" />
         <activity android:name=".UploadPostActivity" />
         <activity android:name=".LoginActivity" />
@@ -26,17 +27,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
+
         <service android:name=".UserService" />
 
         <receiver android:name=".BatteryBroadcastReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.BATTERY_LOW">
-                </action>
+                <action android:name="android.intent.action.BATTERY_LOW"></action>
             </intent-filter>
         </receiver>
-
     </application>
-
-
 
 </manifest>
