@@ -55,7 +55,6 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder> {
                     .into(holder.mAvatarIv);
         }
         catch (Exception e){
-
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

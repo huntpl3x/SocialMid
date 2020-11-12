@@ -259,7 +259,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyHolder>{
                 User user = dataSnapshot.getValue(User.class);
                 if (user.getImage() != null){
                     try{
-                        Picasso.get().load(user.getImage()).into(avatarIv);
+                        Picasso.get().load(user.getImage()).placeholder(R.drawable.ic_default_img).into(avatarIv);
                     }
                     catch (Exception e){ }
                 }

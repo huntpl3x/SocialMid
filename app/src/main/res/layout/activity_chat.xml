@@ -3,12 +3,48 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ChatActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@id/chat_toolbar"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStartWithNavigation="0dp"
+        app:contentInsetStart="0dp"
+        android:background="@color/colorPrimary">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.blogspot.atifsoftwares.circularimageview.CircularImageView
+                app:c_border="false"
+                android:layout_marginTop="1dp"
+                android:id="@+id/avatarIv"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:src="@drawable/ic_default_img" />
+
+            <TextView
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="7dp"
+                android:textColor="@color/colorWhite"
+                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/toolbar_name"
+                android:text="NAME" />
+        </LinearLayout>
+    </androidx.appcompat.widget.Toolbar>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_message_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/chat_toolbar"/>
 
     <LinearLayout
         android:id="@+id/layout_chatbox"
