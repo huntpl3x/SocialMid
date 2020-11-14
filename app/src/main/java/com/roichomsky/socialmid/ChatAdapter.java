@@ -1,6 +1,7 @@
 package com.roichomsky.socialmid;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,16 +103,24 @@ public class ChatAdapter extends RecyclerView.Adapter{
     }
     public class SentHolder extends RecyclerView.ViewHolder{
 
-        TextView timestampTv, messageTv;
+        TextView timestampTv, messageTv, isSeenTv;
 
         public SentHolder(@NonNull View itemView) {
             super(itemView);
             messageTv = itemView.findViewById(R.id.text_message_body);
             timestampTv = itemView.findViewById(R.id.text_message_time);
+            isSeenTv = itemView.findViewById(R.id.text_message_seen);
         }
 
         void bind(Message message) {
             messageTv.setText(message.getMessage());
+
+            System.out.println(message.getSeen());
+
+            if(message.getSeen().equals("true")){
+                isSeenTv.setText("seen");
+                isSeenTv.setTextColor(Color.parseColor("#0066ff"));
+            }
 
             // Format the stored timestamp into a readable String using method.
             Calendar c = Calendar.getInstance();

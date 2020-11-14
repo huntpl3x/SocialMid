@@ -2,13 +2,24 @@ package com.roichomsky.socialmid;
 
 public class Message {
 
-    private String sender, receiver, timestamp, message;
+    private String sender, receiver, timestamp, message, seen;
 
-    public Message(String sender, String receiver, String timestamp, String message) {
+    public Message(){}
+
+    public Message(String sender, String receiver, String timestamp, String message, String seen) {
         this.sender = sender;
         this.receiver = receiver;
         this.timestamp = timestamp;
         this.message = message;
+        this.seen = seen;
+    }
+
+    public String getSeen() {
+        return seen;
+    }
+
+    public void setSeen(String seen) {
+        this.seen = seen;
     }
 
     public String getMessage() {

@@ -8,22 +8,28 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.like.Utils;
 import com.squareup.picasso.Picasso;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ChatActivity extends AppCompatActivity {
@@ -32,6 +38,8 @@ public class ChatActivity extends AppCompatActivity {
     private ChatAdapter mChatAdapter;
     private List<Message> messageList;
 
+    public String friendUID, myUID;
+
     ActionBar actionBar;
     Toolbar toolbar;
 
@@ -39,6 +47,9 @@ public class ChatActivity extends AppCompatActivity {
     ImageView avatarIv;
     EditText messageEt;
     Button sendBtn;
+
+    DatabaseReference refForSeen;
+    ValueEventListener seenListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +71,8 @@ public class ChatActivity extends AppCompatActivity {
         messageEt = findViewById(R.id.chatboxEt);
         sendBtn = findViewById(R.id.chatbox_sendBtn);
 
-        String friendUID = getIntent().getStringExtra("uid");
+        friendUID = getIntent().getStringExtra("uid");
+        myUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         getUserData(friendUID,nameTv,avatarIv);
 
@@ -71,10 +83,21 @@ public class ChatActivity extends AppCompatActivity {
 
         messageList = new ArrayList<>();
 
-        //getAllMessages();
-        mChatAdapter = new ChatAdapter(this, messageList);
+        readMessages();
 
-        recyclerView.setAdapter(mChatAdapter);
+        seenMessages();
+
+        sendBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!TextUtils.isEmpty(messageEt.getText().toString())) {
+                    sendMessage(messageEt.getText().toString());
+                }
+                else{
+                    Toast.makeText(getApplicationContext(), "Cannot send empty message...", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
     }
 
@@ -114,7 +137,81 @@ public class ChatActivity extends AppCompatActivity {
         });
 
     }
-    /*private void getAllMessages() {
-        String UID;
-    }*/
+
+    void sendMessage(String message){
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        HashMap<String, Object> results = new HashMap<>();
+        results.put("sender", FirebaseAuth.getInstance().getCurrentUser().getUid());
+        results.put("receiver", friendUID);
+        results.put("timestamp", Long.toString(timestamp.getTime()));
+        results.put("message", message);
+        results.put("seen", "false");
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Chat");
+        ref.push().setValue(results);
+        messageEt.setText("");
+    }
+
+    void readMessages() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Chat");
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                messageList.clear();
+                for (DataSnapshot ds : dataSnapshot.getChildren()){
+                    Message message = ds.getValue(Message.class);
+                    if ((message.getReceiver().equals(friendUID) && message.getSender().equals(myUID)) ||
+                            (message.getReceiver().equals(myUID) && message.getSender().equals(friendUID))){
+                        messageList.add(message);
+                    }
+
+                    mChatAdapter = new ChatAdapter(getApplicationContext(), messageList);
+                    mChatAdapter.notifyDataSetChanged();
+
+                    recyclerView.setAdapter(mChatAdapter);
+                    recyclerView.scrollToPosition(messageList.size()-1);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    void seenMessages(){
+        refForSeen = FirebaseDatabase.getInstance().getReference("Chat");
+        HashMap<String, Object> hasSeen = new HashMap<>();
+        hasSeen.put("seen", "true");
+        seenListener = refForSeen.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()){
+                    Message message = ds.getValue(Message.class);
+                    if (message.getReceiver().equals(myUID) && message.getSender().equals(friendUID)){
+                        ds.getRef().updateChildren(hasSeen);
+                    }
+
+                    mChatAdapter = new ChatAdapter(getApplicationContext(), messageList);
+                    mChatAdapter.notifyDataSetChanged();
+
+                    recyclerView.setAdapter(mChatAdapter);
+                    recyclerView.scrollToPosition(messageList.size()-1);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        refForSeen.removeEventListener(seenListener);
+    }
 }
