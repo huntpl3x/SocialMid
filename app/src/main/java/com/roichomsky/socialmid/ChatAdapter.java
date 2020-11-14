@@ -96,7 +96,7 @@ public class ChatAdapter extends RecyclerView.Adapter{
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(Long.parseLong(message.getTimestamp()));
             Date d = c.getTime();
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             timestampTv.setText(sdf.format(d));
         }
 
@@ -126,7 +126,7 @@ public class ChatAdapter extends RecyclerView.Adapter{
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(Long.parseLong(message.getTimestamp()));
             Date d = c.getTime();
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             timestampTv.setText(sdf.format(d));
         }
 
