@@ -129,6 +129,5 @@ public class ChatAdapter extends RecyclerView.Adapter{
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             timestampTv.setText(sdf.format(d));
         }
-
     }
 }

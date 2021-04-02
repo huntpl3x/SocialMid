@@ -5,7 +5,6 @@ public class Post {
     private String postURL;
     private String description;
     private String publisherID;
-    private String likesCounter;
     private String timestamp;
 
     public Post(){ }
@@ -15,7 +14,6 @@ public class Post {
         this.postURL = postURL;
         this.description = description;
         this.publisherID = publisherID;
-        this.likesCounter = likesCounter;
         this.timestamp = timestamp;
     }
 
@@ -49,14 +47,6 @@ public class Post {
 
     public void setPublisherID(String publisherID) {
         this.publisherID = publisherID;
-    }
-
-    public String getLikesCounter() {
-        return likesCounter;
-    }
-
-    public void setLikesCounter(String likesCounter) {
-        this.likesCounter = likesCounter;
     }
 
     public String getTimestamp() {

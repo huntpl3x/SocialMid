@@ -237,7 +237,6 @@ public class UploadPostActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-                        while(!uriTask.isSuccessful());
                         Uri downloadUri = uriTask.getResult();
                         //check if image is uploaded or not and url is received
                         if (uriTask.isSuccessful()){

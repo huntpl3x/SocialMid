@@ -3,7 +3,6 @@ package com.roichomsky.socialmid;
 public class Message {
 
     private String sender, receiver, timestamp, message, seen;
-
     public Message(){}
 
     public Message(String sender, String receiver, String timestamp, String message, String seen) {
