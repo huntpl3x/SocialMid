@@ -137,7 +137,6 @@ public class FriendsFragment extends Fragment {
         final FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
         //get path of database named "Users" containing users info
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(fUser.getUid()).child("friendsList");
-        DatabaseReference reference2nd = FirebaseDatabase.getInstance().getReference("Users");
         //get all data from path
         reference.addValueEventListener(new ValueEventListener() {
             @Override

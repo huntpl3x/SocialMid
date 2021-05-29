@@ -93,6 +93,11 @@ public class LoginActivity extends AppCompatActivity {
                     mEmailEt.setError("Invalid Email");
                     mEmailEt.setFocusable(true);
                 }
+                else if(password.length()<6){
+                    //set error and focus to password editText
+                    mPasswordEt.setError("Password length at least 6 characters");
+                    mPasswordEt.setFocusable(true);
+                }
                 else{
                     loginUser(email, password); // login in the user
                 }
